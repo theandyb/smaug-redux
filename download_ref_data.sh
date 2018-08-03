@@ -6,7 +6,7 @@ usage()
 status()
 {
 	if [ "$verbose" = "1" ]; then
-		printf $1
+		printf "$1"
 	fi
 }
 # Main
@@ -80,7 +80,7 @@ status "Done!\n"
 status "\nAncestral genome..."
 curl -s "http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/ancestral_alignments/human_ancestor_GRCh37_e59.tar.bz2" > "human_ancestor_GRCh37_e59.tar.bz2"
 
-tar -($tarOpt)jxf "human_ancestor_GRCh37_e59.tar.bz2"
+tar -${tarOpt}jxf "human_ancestor_GRCh37_e59.tar.bz2"
 status "Done!\n"
 #############################################################################
 # GC content in 10kb windows
