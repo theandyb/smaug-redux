@@ -151,7 +151,7 @@ mkdir DNMs
 curl -s "https://molgenis26.target.rug.nl/downloads/gonl_public/variants/release5.2/GoNL_DNMs.txt" > "DNMs/GoNL_DNMs.txt"
 
 # ITMI
-curl -s "http://www.nature.com/ng/journal/v48/n8/extref/ng.3597-S3.xlsx" > "DNMs/goldmann_2016_dnms.xlsx"
+curl -s "https://media.nature.com/original/nature-assets/ng/journal/v48/n8/extref/ng.3597-S3.xlsx" > "DNMs/goldmann_2016_dnms.xlsx"
 
 status "Done!\n"
 #############################################################################
