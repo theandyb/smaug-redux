@@ -14,18 +14,21 @@ verbose=1
 wgetOpt=
 tarOpt="v"
 while [ "$1" != "" ]; do
-    case $1 in
-        -s | --silent ) verbose=0
-													wgetOpt="-nv"
-													tarOpt=""
-                                ;;
-        -h | --help )           usage
-                                exit
-                                ;;
-        * )                     usage
-                                exit 1
-    esac
-    shift
+	case $1 in
+		-s | --silent )
+			verbose=0
+			wgetOpt="-nv"
+			tarOpt=""
+			;;
+		-h | --help )
+			usage
+			exit
+			;;
+		* )
+			usage
+			exit 1
+	esac
+	shift
 done
 # Create directory structure
 declare -a dirs=("reference_data"
