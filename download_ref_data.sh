@@ -40,8 +40,8 @@ declare -a dirs=("reference_data"
 ## now loop through the above array
 for i in "${dirs[@]}"
 do
-   if [! -d $i ]; then
-		 mkdir $i
+   if [! -d "$i" ]; then
+		 mkdir "$i"
 	 fi
 done
 
