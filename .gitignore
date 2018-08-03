@@ -1,0 +1,8 @@
+reference_data/
+summaries/
+output/
+slurm/
+vcfs/
+images/
+motif_counts/
+singletons/
