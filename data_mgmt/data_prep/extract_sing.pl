@@ -41,7 +41,7 @@ print $mdFH "#SBATCH --array=1-22 \n";
 print $mdFH "#SBATCH --requeue \n";
 # print $mdFH "#SBATCH --exclude=psoriasis-mc01,psoriasis-mc02 \n";
 print $mdFH "#SBATCH --output=\"$slurmdir/slurmJob-%J.out\" --error=\"$slurmdir/slurmJob-%J.err\" \n";
-print $mdFH "srun vcftools --gzvcf /net/bipolar/lockeae/final_freeze/snps/vcfs/chr${SLURM_ARRAY_TASK_ID}/chr${SLURM_ARRAY_TASK_ID}.filtered.modified.vcf.gz --singletons --chr ${SLURM_ARRAY_TASK_ID} --out $analysisdir/singletons/chr${SLURM_ARRAY_TASK_ID}sing";
+print $mdFH "srun vcftools --gzvcf /net/bipolar/lockeae/final_freeze/snps/vcfs/chr\${SLURM_ARRAY_TASK_ID}/chr\${SLURM_ARRAY_TASK_ID}.filtered.modified.vcf.gz --singletons --chr \${SLURM_ARRAY_TASK_ID} --out $analysisdir/singletons/chr\${SLURM_ARRAY_TASK_ID}sing";
 close($mdFH) or die "Unable to close file: $builddatbatch $!";
 
 my $slurmcmd="sbatch $builddatbatch";
