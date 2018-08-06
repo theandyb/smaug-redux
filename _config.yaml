@@ -19,7 +19,7 @@ analysisdir: "/net/snowwhite/home/beckandy/research/smaug-redux"
 mac: "singletons"
 
 # adj defines number of bases upstream/downstream per motif
-adj: 3
+adj: 4
 
 # data defines which set of ERVs to use, either
 # "full" (all calls across entire genome)
