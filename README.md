@@ -1,1 +1,1 @@
-# smaug-redux
+# smaug-redux## What I've done?1. Downloaded and prepared reference data using `download_ref_data.sh` and `prep_ref_data.sh`1. Annotated VCFs with motif and mutation type using `data_mgmt/data_prep/vcf_to_summary.pl`
