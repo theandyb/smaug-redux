@@ -86,7 +86,7 @@ sub getType {
   my $seqp=shift;
 
   my $CAT = "${ref}${alt}";
-  my $Category;
+  my $Category="";
   if($CAT ~~ [qw( AC TG )]){ $Category = "AT_CG";}
   elsif($CAT ~~ [qw( AG TC )]){ $Category = "AT_GC";}
   elsif($CAT ~~ [qw( AT TA )]){ $Category = "AT_TA";}
