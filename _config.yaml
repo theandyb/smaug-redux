@@ -8,7 +8,7 @@ email: "beckandy@umich.edu"
 inputdir: "/net/bipolar/jedidiah/testpipe"
 
 # analysisdir defines the directory containing... well, everything we care about (and more!)
-analysisdir: "/net/snowwhite/home/beckandy/research/smaug-redux/"
+analysisdir: "/net/snowwhite/home/beckandy/research/smaug-redux"
 
 # mac defines the minor allele count of variants to examine, provided the
 # appropriately named directory exists containing the summarized VCF tables
