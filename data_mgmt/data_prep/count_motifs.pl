@@ -66,8 +66,7 @@ if($count_motifs eq "TRUE"){
   } elsif($data eq "mask"){
     $fname = "$analysisdir/reference_data/human_g1k_v37_mask/chr$chr.fasta.gz";
   }
-
-  # if ( -e "$fname$chr.fasta.gz" ) { $fname = "$fname$chr.fasta.gz"; }
+	
   my $fa;
 
   my $startpos;
