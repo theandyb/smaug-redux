@@ -11,7 +11,7 @@ attach(args)
 .libPaths(c(.libPaths(), args$libpath))
 
 require(devtools)
-install_github('carjed/smaug', quiet=TRUE)
+install_github('theandyb/smaug', quiet=TRUE)
 install_github('slowkow/ggrepel', quiet=TRUE)
 
 gh_packages <- c("smaug", "ggrepel")
@@ -29,7 +29,7 @@ invisible(sapply(packages, function(x)
 bink <- binw/1000
 nbp <- adj*2+1
 
-datadir <- paste0(parentdir,
+datadir <- paste0(analysisdir,
 	"/output/", nbp, "bp_", bink, "k_singletons_", data)
 
 summfile <- paste0(analysisdir, "/summaries/", mac, ".", data, ".summary")
@@ -43,3 +43,17 @@ gc()
 ################################################################################
 # Drop singletons in individuals with abnormal mutation signatures
 ################################################################################
+i <- 1
+cbp <- adj + 1 # I'm guessing cbp = "center base pair"?
+
+bins1Mb <- get_bins(paste0(analysisdir, "/motif_counts/3-mers/full"), "1000kb_full.txt")
+bins1Mb$CHR <- gsub("chr", "", bins1Mb$CHR)
+
+# Count singletons per 3-mer subtype per individual
+ind_counts <- full_data$sites %>%
+  mutate(Type=gsub("cpg_", "", Category2),
+    SEQA=substr(Motif, cbp-i, cbp+i),
+    SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+    Motif=paste0(SEQA, "(", SEQB, ")")) %>%
+  group_by(ID, Type, Motif) %>%
+  summarise(n=n())
