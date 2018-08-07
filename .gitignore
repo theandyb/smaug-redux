@@ -6,3 +6,6 @@ vcfs/
 images/
 motif_counts/
 singletons/
+.RData
+.Rhistory
+*.pdf
