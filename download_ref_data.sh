@@ -85,12 +85,6 @@ curl -s "http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/suppo
 
 tar -${tarOpt}jxf "human_ancestor_GRCh37_e59.tar.bz2"
 status "Done!\n"
-#############################################################################
-# GC content in 10kb windows
-#############################################################################
-status "\nGC content in 10kb windows..."
-sed s/chr// "genome.10kb.sorted.bed" | bedtools nuc -fi "human_g1k_v37/human_g1k_v37.fasta" -bed - > "gc10kb.bed"
-status "Done!\n"
 
 #############################################################################
 # CpG islands
