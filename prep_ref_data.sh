@@ -58,6 +58,9 @@ status "\nGC content in 10kb windows..."
 sed s/chr// "genome.10kb.sorted.bed" | bedtools nuc -fi "human_g1k_v37/human_g1k_v37.fasta" -bed - > "gc10kb.bed"
 status "Done!\n"
 
+
+
+
 #############################################################################
 # Compress and index reference genomes
 #############################################################################

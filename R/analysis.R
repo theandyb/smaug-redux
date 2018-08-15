@@ -316,3 +316,6 @@ ggplot()+
     aes(x=PC4, y=PC2), colour="yellow", alpha=0.3)+
   theme_bw()
 ggsave(paste0(analysisdir, "/images/sig_snp_pcs.png"), width=8, height=8)
+
+full_data$sites <- full_data$sites %>%
+	filter(ID %in% keep_ids$ID)
