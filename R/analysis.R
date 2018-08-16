@@ -319,3 +319,8 @@ ggsave(paste0(analysisdir, "/images/sig_snp_pcs.png"), width=8, height=8)
 
 full_data$sites <- full_data$sites %>%
 	filter(ID %in% keep_ids$ID)
+
+##############################################################################
+# Get relative mutation rates per subtype; plot as heatmap
+##############################################################################
+full_data$aggseq <- get_aggseq(full_data$sites, full_data$mct)
