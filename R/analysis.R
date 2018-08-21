@@ -496,3 +496,27 @@ sig_anc <- test_anc %>%
     gt10=ifelse(abs(log(prop))>log(1.2), TRUE, FALSE)) %>%
 	filter(gt10==TRUE) %>%
 	arrange(desc(prop))
+
+
+	if(build_logit){
+	cat("Preparing data for logistic regression model...\n")
+
+	i<-3
+	for(chr in 1:22){
+		posfile <- paste0(analysisdir,
+		"/output/logmod_data/chr", chr, "_sites.txt")
+		dat <- full_data$sites %>%
+		# summfile1 <- sites %>%
+		# filter(Category==categ) %>%
+		filter(CHR==chr) %>%
+		mutate(Type=gsub("cpg_", "", Category2),
+		SEQA=substr(Motif, cbp-i, cbp+i),
+		SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+		Sequence=paste0(SEQA, "(", SEQB, ")")) %>%
+		dplyr::select(CHR, POS, Sequence, Type) %>%
+		mutate(mut=1) %>%
+		spread(Type, mut, fill=0)
+
+		write.table(dat, posfile, col.names=F, row.names=F, quote=F, sep="\t")
+		}
+	}
