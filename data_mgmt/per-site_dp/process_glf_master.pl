@@ -11,6 +11,7 @@ use File::Path qw(make_path);
 use FindBin;
 use YAML::XS 'LoadFile';
 use feature 'say';
+use List::Util 'sum';
 
 my $relpath = $FindBin::Bin;
 my $configpath = dirname(dirname($relpath));
