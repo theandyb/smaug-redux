@@ -201,7 +201,7 @@ sub validate_slurm {
           $statushash{$i}=0;
         }
       }
-      $numcompleted = sum values %statushash;
+      $numcompleted = sum values $statushash;
 
       if($numcompleted>=$njs){
         $cflag=1;
