@@ -19,7 +19,7 @@ my $relpath = $FindBin::Bin;
 my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
-my $parentdir = $config->{parentdir};
+my $analysisdir = $config->{analysisdir};
 
 use lib "$FindBin::Bin/../lib";
 use SmaugFunctions qw(forkExecWait getRef);
@@ -31,7 +31,7 @@ my $ind;
 GetOptions ('chr=i'=> \$chr,
 'ind=i' => \$ind);
 
-my $f_dirlist = "$parentdir/output/glf_depth/chr${chr}_glf_dirlist.txt";
+my $f_dirlist = "$analysisdir/output/glf_depth/chr${chr}_glf_dirlist.txt";
 open my $dirlist, '<', $f_dirlist or die "can't open $f_dirlist: $!";
 
 my @dirs;
@@ -56,7 +56,7 @@ for(my $i=$start; $i<=$end; $i+=10){
   $hashn{$i}=0;
 }
 
-my $outfile = "$parentdir/output/glf_depth/meandp/chr$chr.$chunk.txt";
+my $outfile = "$analysisdir/output/glf_depth/meandp/chr$chr.$chunk.txt";
 print "$outfile\n";
 open(OUT, '>', $outfile) or die "can't write to $outfile: $!\n";
 

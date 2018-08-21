@@ -17,7 +17,7 @@ my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
 my $email = $config->{email};
-my $parentdir = $config->{parentdir};
+my $analysisdir = $config->{analysisdir};
 my $samples = $config->{samples};
 
 use lib "$FindBin::Bin/../lib";
@@ -31,12 +31,12 @@ my $subset=0;
 my $numind=3765;
 my $chunksize=40; # No. of records to process in each worker job
 
-make_path("$parentdir/output/glf_depth/chr$chr");
-my $allfiles="$parentdir/output/glf_depth/glf_filelist.txt";
-my $chrfiles="$parentdir/output/glf_depth/chr${chr}_glf_filelist.txt";
+make_path("$analysisdir/output/glf_depth/chr$chr");
+my $allfiles="$analysisdir/output/glf_depth/glf_filelist.txt";
+my $chrfiles="$analysisdir/output/glf_depth/chr${chr}_glf_filelist.txt";
 
 my $today = POSIX::strftime('%Y%m%d', localtime);
-my $slurmdir = "$parentdir/output/slurm/$today";
+my $slurmdir = "$analysisdir/output/slurm/$today";
   make_path("$slurmdir");
 
 my $chrFH;
@@ -52,9 +52,9 @@ if($subset==0){
 } else {
   # Not used--tested if we can maintain accuracy and reduce workload
   # by subsampling file list to 10% of samples
-  $chrfilesub="$parentdir/output/glf_depth/chr${chr}_glf_filelist.sub.txt";
+  $chrfilesub="$analysisdir/output/glf_depth/chr${chr}_glf_filelist.sub.txt";
 
-  my $subsetsamples="$parentdir/output/glf_depth/list_sub.txt";
+  my $subsetsamples="$analysisdir/output/glf_depth/list_sub.txt";
   my $sscmd="cat $samples | perl -ne 'print \$_ if 0.1 > rand;' > $subsetsamples";
   print "Subsetting samples: $sscmd\n";
   forkExecWait($sscmd);
@@ -75,7 +75,7 @@ print "Number of individuals to be processed: $numind\n";
 
 # initialize and run sbatch file
 my $jobcmd="chr${chr}_process_glfs";
-my $workerbatch = "$parentdir/slurm/slurm_process_glfs.$chr.txt";
+my $workerbatch = "$analysisdir/slurm/slurm_process_glfs.$chr.txt";
 open my $wFH, '>', $workerbatch or die "can't write to $workerbatch: $!\n";
 print $wFH "#!/bin/sh \n";
 print $wFH "#SBATCH --mail-type=FAIL \n";
@@ -90,13 +90,13 @@ print $wFH "#SBATCH --requeue \n";
 print $wFH "#SBATCH --exclude=r30,r14,inpsyght \n";
 # print $wFH "#SBATCH --exclude=psoriasis-mc01,psoriasis-mc02 \n";
 print $wFH "#SBATCH --output=\"$slurmdir/slurmJob-%J.out\" --error=\"$slurmdir/slurmJob-%J.err\" \n";
-print $wFH "srun perl $parentdir/smaug-genetics/data_mgmt/per-site_dp/process_glf_worker.pl --chr $chr --ind \${SLURM_ARRAY_TASK_ID} --chunk $chunksize --filelist $chrfilesub\n";
+print $wFH "srun perl $analysisdir/smaug-genetics/data_mgmt/per-site_dp/process_glf_worker.pl --chr $chr --ind \${SLURM_ARRAY_TASK_ID} --chunk $chunksize --filelist $chrfilesub\n";
 close($wFH) or die "Unable to close file: $workerbatch $!";
 
 my $slurmcmd="sbatch $workerbatch";
 forkExecWait($slurmcmd);
 
-# my $jobIDfile="$parentdir/output/glf_depth/chr$chr.jobID";
+# my $jobIDfile="$analysisdir/output/glf_depth/chr$chr.jobID";
 my $rawID=`squeue --format \"%.24i %.9P %.24j %.8u %.2t %.10M %.6D\" -n $jobcmd | awk 'NR==2 {print \$1}'`;
 my $ID=substr($rawID, 0, index($rawID, '_'));
 my $datestring = localtime();
@@ -105,8 +105,8 @@ print "Batch job $ID queued at $datestring...\n";
 &validate_slurm($ID, $numjobs, 120);
 
 my %filehash=();
-my $f_dirlist = "$parentdir/output/glf_depth/chr${chr}_glf_dirlist.txt";
-my $getdirlist = "find $parentdir/output/glf_depth/chr$chr -mindepth 1 -maxdepth 1 -type d > $f_dirlist";
+my $f_dirlist = "$analysisdir/output/glf_depth/chr${chr}_glf_dirlist.txt";
+my $getdirlist = "find $analysisdir/output/glf_depth/chr$chr -mindepth 1 -maxdepth 1 -type d > $f_dirlist";
 forkExecWait($getdirlist);
 
 my $numdirs = `wc -l $f_dirlist | cut -d" " -f1`;
@@ -115,7 +115,7 @@ chomp($numdirs);
 # initialize and run sbatch file
 my $x = 1000 + int(rand(9999 - 1000));
 $jobcmd="chr${chr}_glf_meandp_$x";
-my $meandpbatch = "$parentdir/slurm/slurm_glf_meandp.$chr.txt";
+my $meandpbatch = "$analysisdir/slurm/slurm_glf_meandp.$chr.txt";
 open my $mdFH, '>', $meandpbatch or die "can't write to $meandpbatch: $!\n";
 print $mdFH "#!/bin/sh \n";
 print $mdFH "#SBATCH --mail-type=FAIL \n";
@@ -130,7 +130,7 @@ print $mdFH "#SBATCH --requeue \n";
 print $mdFH "#SBATCH --exclude=r30,r14,inpsyght \n";
 # print $mdFH "#SBATCH --exclude=psoriasis-mc01,psoriasis-mc02 \n";
 print $mdFH "#SBATCH --output=\"$slurmdir/slurmJob-%J.out\" --error=\"$slurmdir/slurmJob-%J.err\" \n";
-print $mdFH "srun perl $parentdir/smaug-genetics/data_mgmt/per-site_dp/process_glf_meandp.pl --chr $chr --ind \${SLURM_ARRAY_TASK_ID}";
+print $mdFH "srun perl $analysisdir/smaug-genetics/data_mgmt/per-site_dp/process_glf_meandp.pl --chr $chr --ind \${SLURM_ARRAY_TASK_ID}";
 close($mdFH) or die "Unable to close file: $meandpbatch $!";
 
 $slurmcmd="sbatch $meandpbatch";
@@ -175,14 +175,14 @@ sub validate_slurm {
   OUTER:
   while($cflag!=1){
 
-    # my $logfile="$parentdir/output/glf_depth/chr$chr.data.log";
+    # my $logfile="$analysisdir/output/glf_depth/chr$chr.data.log";
     # my $logcmd="sacct -j $ID --format=JobID,State | awk 'NR>2 {print \$2}' | sort | uniq | paste -d- -s > $logfile";
     # forkExecWait($logcmd);
     #
     # open my $logFH, '<', $logfile or die "can't open $logfile: $!";
     my $numcompleted=0;
     foreach my $i (1..$njs){
-      # my $jobcmd="perl $parentdir/smaug-genetics/data_mgmt/process_glf_worker.pl --chr $chr --ind $i --chunk $chunksize --filelist $chrfilesub";
+      # my $jobcmd="perl $analysisdir/smaug-genetics/data_mgmt/process_glf_worker.pl --chr $chr --ind $i --chunk $chunksize --filelist $chrfilesub";
       # print $jobFH "$jobcmd\n";
 
       if($statushash{$i}!=1){
