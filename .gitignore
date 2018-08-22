@@ -6,7 +6,7 @@ vcfs/
 images/
 motif_counts/
 singletons/
-.RData
+.RData*
 .Rhistory
 *.pdf
 load_libs.R
