@@ -18,7 +18,7 @@ my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
 my $email = $config->{email};
-my $parentdir = $config->{parentdir};
+my $parentdir = $config->{analysisdir};
 my $libpath = $config->{libpath};
 
 my $today = POSIX::strftime('%Y%m%d', localtime);
@@ -63,7 +63,6 @@ if($parentjob>1){
   print $mdFH "#SBATCH --mem=8000 \n";
   print $mdFH "#SBATCH --time 00:20:00 \n";
   # print $mdFH "#SBATCH --job-name=logmod \n";
-  print $mdFH "#SBATCH --partition=bipolar \n";
   # print $mdFH "#SBATCH --array=$jobids \n";
   print $mdFH "#SBATCH --requeue \n";
 	# print $mdFH "#SBATCH --exclude=hunt-mc05,hunt-mc06,hunt-mc07,hunt-mc08,twins-mc01,twins-mc04,finnseq-mc02,dl3614,dl3615,dl3616,dl3617,dl3618,dl3619 \n";
@@ -77,7 +76,7 @@ if($parentjob>1){
   print $mdFH "exit 0 \n";
 	print $mdFH "fi \n";
 
-  print $mdFH "srun Rscript $parentdir/smaug-genetics/R/log_mod.r \$CAT $parentdir $libpath \$INDEX 1>\$STDOUT 2>\$STDERR \n";
+  print $mdFH "srun Rscript $parentdir/R/log_mod.r \$CAT $parentdir $libpath \$INDEX 1>\$STDOUT 2>\$STDERR \n";
   close($mdFH) or die "Unable to close file: $builddatbatch $!";
 
   my $slurmcmd="gridbatch $builddatbatch";
