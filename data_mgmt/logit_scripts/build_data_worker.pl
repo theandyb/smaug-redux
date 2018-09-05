@@ -23,7 +23,7 @@ my $config = LoadFile("$configpath/_config.yaml");
 my $adj = 3;
 my $subseq = $adj*2+1;
 my $data = $config->{data};
-my $analysisdir = $config->{analysisdir};
+my $parentdir = $config->{parentdir};
 
 use lib "$FindBin::Bin/../lib";
 use SmaugFunctions qw(forkExecWait getMotif);
@@ -45,7 +45,7 @@ use SmaugFunctions qw(forkExecWait getMotif);
 # }
 
 # Initialize gzipped output
-# my $outfile = "$analysisdir/output/logmod_data/chr${chr}_${categ}_full.txt.gz";
+# my $outfile = "$parentdir/output/logmod_data/chr${chr}_${categ}_full.txt.gz";
 # open(my $outFH, "| gzip -c > $outfile") or
 #   die "Could not write to $outfile: $!";
 
@@ -55,8 +55,8 @@ foreach my $chr (1 .. 22){
 	# Create hash keyed by singleton positions, with input line as value
 	# print "Indexing chr${chr}: ${categ} singleton positions...\n";
 
-	# my $posfile = "$analysisdir/output/logmod_data/chr${chr}_${categ}_sites.txt";
-	my $posfile = "$analysisdir/output/logmod_data/chr${chr}_sites.txt";
+	# my $posfile = "$parentdir/output/logmod_data/chr${chr}_${categ}_sites.txt";
+	my $posfile = "$parentdir/output/logmod_data/chr${chr}_sites.txt";
 	print "Indexing chr${chr} singleton file: $posfile...\n";
 
 	open my $posFH, '<', $posfile or die "can't open $posfile: $!";
@@ -73,22 +73,22 @@ foreach my $chr (1 .. 22){
 	print "Getting chr${chr}: reference sequence...\n";
 	my $fname;
 	if($data eq "full"){
-		$fname = "$analysisdir/reference_data/human_g1k_v37/chr$chr.fasta.gz";
+		$fname = "$parentdir/reference_data/human_g1k_v37/chr$chr.fasta.gz";
 	} elsif($data eq "mask"){
-		$fname = "$analysisdir/reference_data/human_g1k_v37_mask/chr$chr.fasta.gz";
+		$fname = "$parentdir/reference_data/human_g1k_v37_mask/chr$chr.fasta.gz";
 	}
 
 	my $fa = FaSlice->new(file=>$fname, oob=>'N', size=>1_000_000);
 
-	my $fixedfile = "$analysisdir/reference_data/genome.5000kb.sorted.bed";
+	my $fixedfile = "$parentdir/reference_data/genome.5000kb.sorted.bed";
 	open my $fixedFH, '<', $fixedfile or die "$fixedfile: $!";
 	# $fa = FaSlice->new(file=>$fname, oob=>'N', size=>$binw);
 
-	my $chunkpath = "$analysisdir/output/logmod_data/chr$chr";
+	my $chunkpath = "$parentdir/output/logmod_data/chr$chr";
 	make_path($chunkpath);
 
-	# my $splitpath = "$analysisdir/output/logmod_data/motifs3/$categ";
-	my $splitpath = "$analysisdir/output/logmod_data/motifs3";
+	# my $splitpath = "$parentdir/output/logmod_data/motifs3/$categ";
+	my $splitpath = "$parentdir/output/logmod_data/motifs3";
 	make_path($splitpath);
 
 	my $i = 1;
@@ -106,7 +106,7 @@ foreach my $chr (1 .. 22){
 		if($chrind eq "chr$chr"){
 
 			# hash depth file
-			my $dpdir = "$analysisdir/output/glf_depth/meandp";
+			my $dpdir = "$parentdir/output/glf_depth/meandp";
 			# /net/bipolar/jedidiah/mutation/output/glf_depth/meandp/chr20.5000001.10000000.txt
 			my $dpfile = "$dpdir/chr$chr.$startpos.$endpos.txt";
 			print "Indexing chunk $i depth file: $dpfile...\n";
@@ -160,7 +160,7 @@ foreach my $chr (1 .. 22){
 			close $outFH or warn $! ? "Error closing: $!" : "Exit status $? ";
 
 			print "Splitting chunk $i output file: $outfile...\n";
-			# my $fullfile = "$analysisdir/output/logmod_data/chr${chr}_${categ}_full.txt.gz";
+			# my $fullfile = "$parentdir/output/logmod_data/chr${chr}_${categ}_full.txt.gz";
 			# my $subcmd = "sort -k3 $outfile | awk '{print >> \"$splitpath/${categ}_\" substr(\$3, 1, 7) \".txt\"}'";
 			my $subcmd = "sort -k3,3 $outfile | awk '{print >> \"$splitpath/\" substr(\$3, 1, 7) \".txt\"}'";
 			# my $subcmd = "cat $outfile | awk '{print >> \"$splitpath/${categ}_\" substr(\$3, 1, 7) \".txt\"}'";

@@ -18,11 +18,11 @@ my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
 my $email = $config->{email};
-my $analysisdir = $config->{analysisdir};
+my $parentdir = $config->{parentdir};
 my $libpath = $config->{libpath};
 
 my $today = POSIX::strftime('%Y%m%d', localtime);
-my $slurmdir = "$analysisdir/output/slurm/$today";
+my $slurmdir = "$parentdir/output/slurm/$today";
   make_path("$slurmdir");
 
 my $parentjob=1;
@@ -52,7 +52,7 @@ if($parentjob>1){
 
 # foreach my $categ (@categs){
   # my $jobcmd="${categ}_logmod";
-  my $builddatbatch = "$analysisdir/slurm/logmod.txt";
+  my $builddatbatch = "$parentdir/slurm/logmod.txt";
   open my $mdFH, '>', $builddatbatch or die "can't write to $builddatbatch: $!\n";
   print $mdFH "#!/bin/bash \n";
 	print $mdFH "#SGRIDBATCH CAT='AT' 'GC'\n";
@@ -77,7 +77,7 @@ if($parentjob>1){
   print $mdFH "exit 0 \n";
 	print $mdFH "fi \n";
 
-  print $mdFH "srun Rscript $analysisdir/smaug-genetics/R/log_mod.r \$CAT $analysisdir $libpath \$INDEX 1>\$STDOUT 2>\$STDERR \n";
+  print $mdFH "srun Rscript $parentdir/smaug-genetics/R/log_mod.r \$CAT $parentdir $libpath \$INDEX 1>\$STDOUT 2>\$STDERR \n";
   close($mdFH) or die "Unable to close file: $builddatbatch $!";
 
   my $slurmcmd="gridbatch $builddatbatch";
