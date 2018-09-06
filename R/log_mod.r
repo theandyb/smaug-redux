@@ -129,13 +129,13 @@ logitMod <- function(sites, categ, split){
 		coefs$Sequence <- escmotif
 
 	} else {
-		cat("Not enough data--predicted rates will be marginal rate only\n")
+		#cat("Not enough data--predicted rates will be marginal rate only\n")
 		predicted$mu <- round(sum(sites[,ind])/nrow(sites), 6)
 	}
 
 	# New dir for each chromosome (faster to write, slower to sort?)
 	if(split){
-		cat(paste0("Writing predicted rates to: ", parentdir, "/output/predicted/", categ, "/chr*/", escmotif, ".txt\n"))
+		#cat(paste0("Writing predicted rates to: ", parentdir, "/output/predicted/", categ, "/chr*/", escmotif, ".txt\n"))
 		chr.split <- split(predicted, predicted$CHR)
 		for(i in 1:length(chr.split)){
 			chr <- unique(chr.split[[i]]$CHR)
@@ -154,7 +154,7 @@ logitMod <- function(sites, categ, split){
 ##############################################################################
 # Run models
 ##############################################################################
-cat("Running model on", runmotif, "sites...\n")
+#cat("Running model on", runmotif, "sites...\n")
 
 for(categ in run_cats){
 	coefs <- logitMod(sites=sites, categ=categ, split=TRUE)
@@ -162,6 +162,7 @@ for(categ in run_cats){
 	coefdir <- paste0(parentdir, "/output/logmod_data/coefs/", categ, "/")
 	dir.create(coefdir, recursive=T, showWarnings = FALSE)
 	coeffile <- paste0(coefdir, categ, "_", escmotif, "_coefs.txt")
-	cat(paste0("Writing coefficient estimates to: ", coeffile, "\n"))
+	#cat(paste0("Writing coefficient estimates to: ", coeffile, "\n"))
 	write.table(coefs, coeffile, col.names=F, row.names=F, quote=F, sep="\t")
 }
+cat("DONE!")
