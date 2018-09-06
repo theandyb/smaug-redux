@@ -25,7 +25,7 @@ suppressPackageStartupMessages(library("bedr", quietly=TRUE, warn.conflicts=FALS
 
 # source(paste0(parentdir, "/smaug-genetics/R/get_functions.r"))
 
-yaml_args <- yaml.load_file(paste0(parentdir, "/smaug-genetics/_config.yaml"))
+yaml_args <- yaml.load_file(paste0(parentdir, "/_config.yaml"))
 attach(yaml_args)
 
 parentdir <- analysisdir
