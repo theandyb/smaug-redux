@@ -1,7 +1,8 @@
 library("tidyverse")
+library("yaml")
 initial.options <- commandArgs(trailingOnly = FALSE)
-file.arg.name <- "--file="
-script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
-script.basename <- dirname(script.name)
+script.basename <- sub("--file=", "", initial.options[grep("--file=", initial.options)]) %>%
+  dirname
 setwd(script.basename)
-print(getwd())
+args <- yaml.load_file("../_config.yaml")
+print(args)
