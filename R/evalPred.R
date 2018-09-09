@@ -21,8 +21,7 @@ get_sum <- function(pred.name){
   dat <- read_tsv(pred.name, col_names = FALSE)
   chr <- pred.name %>% str_extract("chr[0-9]+") %>%
             str_extract("[0-9]+") %>% as.numeric
-  type <- pred.name %>%
-            str_extract("[A,C,G,T]{2}_[A,C,G,T]{2}")
+  type <- str_extract(pred.name, "[A,C,G,T]{2}_[A,C,G,T]{2}")
   return tibble(
             chr = chr,
             type = type,
