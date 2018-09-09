@@ -22,7 +22,7 @@ for(pred.name in pred.files){
   dat <- read_tsv(pred.name, col_names = FALSE)
   chr <- pred.name %>% str_extract("chr[0-9]+") %>%
             str_extract("[0-9]+") %>% as.numeric
-  type <- pred_name %>%
+  type <- pred.name %>%
             str_extract("[A,C,G,T]{2}_[A,C,G,T]{2}")
   res <- bind_rows(res, tibble(
             chr = chr,
