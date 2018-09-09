@@ -34,4 +34,4 @@ res <- mclapply(pred.files, get_sum, mc.cores = detectCores())
 
 res.table <- bind_rows(res)
 
-write.csv(res.table, file = "explore.csv")
+write.csv(res.table, file = "explore.csv", row.names=FALSE)
