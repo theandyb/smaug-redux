@@ -43,7 +43,6 @@ my @categs = qw( AT_CG AT_GC AT_TA GC_AT GC_CG GC_TA );
   print $mdFH "#SBATCH --mem=4000 \n";
   print $mdFH "#SBATCH --time 2:00:00 \n";
   print $mdFH "#SBATCH --job-name=sort_pred \n";
-  print $mdFH "#SBATCH --partition=bipolar \n";
   # print $mdFH "#SBATCH --array=1-22 \n";
   print $mdFH "#SBATCH --requeue \n";
   print $mdFH "export STDOUT=\"$slurmdir/chr\$INDEX.\$CAT.out\"\n";
