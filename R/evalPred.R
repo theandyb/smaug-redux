@@ -17,6 +17,7 @@ pred.files <- Sys.glob("chr*.txt")
 #for(pred.name in pred.files){
 get_sum <- function(pred.name){
   # What do we want to get? Min, Max, Var, Number > 0.5
+  print(str_c("Processing file: ", pred.name))
   # load the data
   dat <- read_tsv(pred.name, col_names = FALSE)
   chr <- pred.name %>% str_extract("chr[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric()
