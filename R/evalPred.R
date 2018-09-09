@@ -24,8 +24,9 @@ get_sum <- function(pred.name){
   return tibble(chr = chr, type = type, min = min(dat$X3), max = max(dat$X3), var = var(dat$X3), highly = sum(dat$X3 > 0.5))
 }
 
-res <- mclapply(pred.files, get_sum, mc.cores = detectCores())
+test <- get_sum(pred.files[1])
+#res <- mclapply(pred.files, get_sum, mc.cores = detectCores())
 
-res.table <- bind_rows(res)
+#res.table <- bind_rows(res)
 
-write.csv(res.table, file = "explore.csv")
+#write.csv(res.table, file = "explore.csv")
