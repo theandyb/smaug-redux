@@ -22,12 +22,17 @@ get_sum <- function(pred.name){
   dat <- read_tsv(pred.name, col_names = FALSE)
   chr <- pred.name %>% str_extract("chr[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric()
   type <- str_extract(pred.name, "[A,C,G,T]{2}_[A,C,G,T]{2}")
-  return(tibble(chr = chr,
-                type = type,
-                min = min(dat$X3),
-                max = max(dat$X3),
-                var = var(dat$X3),
-                highly = sum(dat$X3 > 0.5)))
+  ret <- dat %>% 
+          mutate(chr = chr,
+                 type = type,
+                 min.rate = min(X3),
+                 max.rate = max(X3),
+                 median.rate = median(X3),
+                 var.rate = var(X3),
+                 nSites = n(),
+                 nMutableSites = sum(X3 > 0.5)
+                )
+  return(ret)
 }
 
 res <- mclapply(pred.files, get_sum, mc.cores = detectCores())
