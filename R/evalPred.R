@@ -14,12 +14,13 @@ pred.files.dir <- paste0(analysisdir, "/output/predicted")
 setwd(pred.files.dir)
 
 pred.files <- Sys.glob("chr*.txt")
+print(str_c("We are parsing ", length(pred.files), " files"))
 #for(pred.name in pred.files){
 get_sum <- function(pred.name){
   # What do we want to get? Min, Max, Var, Number > 0.5
   print(str_c("Processing file: ", pred.name))
   # load the data
-  dat <- read_tsv(pred.name, col_names = FALSE)
+  suppressMessages(dat <- read_tsv(pred.name, col_names = FALSE))
   chr <- pred.name %>% str_extract("chr[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric()
   type <- str_extract(pred.name, "[A,C,G,T]{2}_[A,C,G,T]{2}")
   return(
@@ -34,7 +35,7 @@ get_sum <- function(pred.name){
                 ))
 }
 
-res <- mclapply(pred.files, get_sum, mc.cores = detectCores())
+res <- mclapply(pred.files, get_sum, mc.cores = 10)
 
 res.table <- bind_rows(res)
 
