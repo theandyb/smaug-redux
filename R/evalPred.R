@@ -29,6 +29,7 @@ get_sum <- function(pred.name){
                  min.rate = min(dat$X3),
                  max.rate = max(dat$X3),
                  median.rate = median(dat$X3),
+		 mean.rate = mean(dat$X3),
                  var.rate = var(dat$X3),
                  nSites = length(dat$X3),
                  nMutableSites = sum(dat$X3 > 0.5)
