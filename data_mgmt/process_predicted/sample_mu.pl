@@ -44,9 +44,9 @@ foreach my $chr (1..22){
   print "Getting reference for chr$chr...\n";
   my $f_fasta;
   if($data eq "mask"){
-    $f_fasta = "$parentdir/reference_data/human_g1k_v37.mask.fasta";
+    $f_fasta = "$parentdir/reference_data/human_g1k_v37_mask/human_g1k_v37.mask.fasta";
   } else {
-    $f_fasta = "$parentdir/reference_data/human_g1k_v37.fasta";
+    $f_fasta = "$parentdir/reference_data/human_g1k_v37/human_g1k_v37.fasta";
   }
 
   my $seq=getRef($f_fasta, $chr);
