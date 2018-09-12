@@ -31,7 +31,7 @@ use SmaugFunctions qw(forkExecWait getRef getMotif);
 my @categs = qw( AT_CG AT_GC AT_TA GC_AT GC_CG GC_TA );
 
 print "Preparing de novo data...\n";
-my $prepdnmcmd = "Rscript $parentdir/smaug-genetics/R/read_dnms.r TRUE $parentdir";
+my $prepdnmcmd = "Rscript $parentdir/R/read_dnms.r TRUE $parentdir";
 forkExecWait($prepdnmcmd);
 
 srand($seed);
