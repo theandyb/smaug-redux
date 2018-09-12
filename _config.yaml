@@ -24,7 +24,7 @@ adj: 4
 # data defines which set of ERVs to use, either
 # "full" (all calls across entire genome)
 # "mask" ()
-data: "mask"
+data: "full"
 
 # bin_scheme variable defines how motifs are counted.
 # Must be set to one of 3 options:
