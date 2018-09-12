@@ -21,7 +21,7 @@ my $config = LoadFile("$configpath/_config.yaml");
 # my $adj = $config->{adj};
 my $adj = 3;
 my $data = $config->{data};
-my $parentdir = $config->{parentdir};
+my $parentdir = $config->{analysisdir};
 my $seed = $config->{rseed};
 my $subseq = $adj*2+1;
 
