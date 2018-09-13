@@ -36,6 +36,9 @@ summfile <- paste0(analysisdir, "/summaries/", mac, ".", data, ".summary")
 singfile <- paste0(analysisdir, "/singletons/full.singletons")
 bindir <- paste0(analysisdir, "/motif_counts/", nbp, "-mers/full")
 
+# Read and preprocess data
+full_data <- getData(summfile, singfile, bindir)
+
 ##############################################################################
 # function for running models
 ##############################################################################
@@ -211,10 +214,6 @@ mergeRates <- function(chrp_c){
   rates_7D <- r5m %>%
     mutate(SEQ7=substr(Motif, 1, 7)) %>%
     dplyr::select(Category=Type, SEQ7, MU_7D=ERV_down_rel_rate)
-
-  # rates_anc <- ancgpdat %>%
-  #   mutate(SEQ7=substr(Motif, 1, 7)) %>%
-  #   dplyr::select(Category=Type, SEQ7, MU_7AN=ERV_rel_rate_anc)
 
 	rates_anc <- test_anc %>%
     mutate(SEQ7=substr(Motif, 1, 7)) %>%
