@@ -1,44 +1,3 @@
-#!/usr/bin/RScript
-
-cat("Loading packages...")
-install.packages("yaml", quiet=TRUE)
-require(yaml)
-
-args <- yaml.load_file("./_config.yaml")
-attach(args)
-
-# add user libpath, if it exists (useful if running on a different node)
-.libPaths(c(.libPaths(), args$libpath))
-
-require(devtools)
-install_github('theandyb/smaug', quiet=TRUE)
-install_github('slowkow/ggrepel', quiet=TRUE)
-
-gh_packages <- c("smaug", "ggrepel")
-invisible(sapply(gh_packages, function(x)
-	suppressMessages(require(x, character.only = TRUE))))
-
-# install/load CRAN packages
-packages <- c("tidyverse", "broom", "RColorBrewer", "MASS", "boot", "speedglm",
-	"psych", "lmtest", "fmsb", "hexbin", "cowplot", "grid", "gtable", "gridExtra",
-	"yaml", "openxlsx", "Biostrings", "svglite", "NMF", "emdbook")
-invisible(sapply(packages, function(x)
-	suppressMessages(usePackage(x))))
-
-# Define additional variables for cleaner strings, etc.
-bink <- binw/1000
-nbp <- adj*2+1
-
-datadir <- paste0(analysisdir,
-	"/output/", nbp, "bp_", bink, "k_singletons_", data)
-
-summfile <- paste0(analysisdir, "/summaries/", mac, ".", data, ".summary")
-singfile <- paste0(analysisdir, "/singletons/full.singletons")
-bindir <- paste0(analysisdir, "/motif_counts/", nbp, "-mers/full")
-
-# Read and preprocess data
-full_data <- getData(summfile, singfile, bindir)
-
 ##############################################################################
 # function for running models
 ##############################################################################
@@ -215,6 +174,10 @@ mergeRates <- function(chrp_c){
     mutate(SEQ7=substr(Motif, 1, 7)) %>%
     dplyr::select(Category=Type, SEQ7, MU_7D=ERV_down_rel_rate)
 
+  # rates_anc <- ancgpdat %>%
+  #   mutate(SEQ7=substr(Motif, 1, 7)) %>%
+  #   dplyr::select(Category=Type, SEQ7, MU_7AN=ERV_rel_rate_anc)
+
 	rates_anc <- test_anc %>%
     mutate(SEQ7=substr(Motif, 1, 7)) %>%
     dplyr::select(Category=Type, SEQ7, MU_7AN=estimate2)
@@ -301,7 +264,7 @@ validationPipe <- function(nsites){
 		aic_sim=getAIC(combined_models_sim), stringsAsFactors=F) %>%
     tibble::rownames_to_column("mod")
 
-  fitfile <- paste0(parentdir, "/output/model_fit_", nsites, ".txt")
+  fitfile <- paste0(analysisdir, "/output/model_fit_", nsites, ".txt")
   write.table(combined_models_summary, fitfile,
     col.names=T, row.names=F, quote=F, sep="\t")
 
@@ -351,7 +314,7 @@ validationPipe <- function(nsites){
     type_models_summary <- bind_rows(type_models_summary, summ_tmp)
   }
 
-  typefitfile <- paste0(parentdir, "/output/model_fit_by_type", nsites, ".txt")
+  typefitfile <- paste0(analysisdir, "/output/model_fit_by_type", nsites, ".txt")
   write.table(type_models_summary, typefitfile,
     col.names=T, row.names=F, quote=F, sep="\t")
   return(list(combined_models_summary, type_models_summary))
@@ -361,7 +324,7 @@ validationPipe <- function(nsites){
 # Read and process data
 ##############################################################################
 cat("Reading data...\n")
-validation_file <- paste0(parentdir, "/output/predicted/validation_sites.txt")
+validation_file <- paste0(analysisdir, "/output/predicted/validation_sites.txt")
 input_sites <- read.table(validation_file, header=F, stringsAsFactors=F)
 names(input_sites) <- c("CHR", "POS", "MU", "OBS", "Category", "SEQ", "ID")
 
@@ -432,11 +395,11 @@ cbp1 <- ggplot(combined_barplots, aes(x=mod, y=daic, group=mod, fill=mod))+
 		legend.text=element_text(size=14))
 
 cbp1 + theme(legend.position="none")
-ggsave("/net/bipolar/jedidiah/mutation/images/testbar.pdf", width=2, height=6)
+ggsave(paste0(analysisdir, "/images/testbar.pdf"), width=2, height=6)
 
 cbp1a <- cbp1 + theme(legend.position="bottom")
 legend <- get_legend(cbp1a)
-pdf(paste0(parentdir, "/images/barplot_legend.pdf"),
+pdf(paste0(analysisdir, "/images/barplot_legend.pdf"),
 	height=2, width=6, units="in", res=300)
 grid.draw(legend)
 dev.off()
@@ -577,198 +540,7 @@ pointfig <- ggplot()+
 
 pointfig
 # cvd_grid(pointfig)
-ggsave("/net/bipolar/jedidiah/mutation/images/testpoint_facet.pdf", width=8, height=8)
-
-# pointfig2 <- ggplot()+
-# 	geom_vline(xintercept=1e-04, linetype="dashed", colour="white")+
-# 	geom_point(data=facet_barplots, aes(x=drsq, y=category), colour="white")+
-# 	geom_point(data=facet_barplots,
-# 		aes(x=drsq, y=category, group=mod, colour=mod, fill=mod, shape=mod),
-# 		alpha=0.9, size=4, stroke=1)+
-# 	facet_wrap(~category, ncol=1, scales="free_y", strip.position="left")+
-# 	scale_x_log10()+
-# 	scale_fill_manual("Model", values=brewer.pal(10, "Spectral")[c(10:8,3,1,3)])+
-# 	scale_colour_manual("Model", values=c(brewer.pal(10, "Spectral")[c(10:8,3,1)], "black"))+
-# 	scale_shape_manual("Model", values=c(rep(21,5),24))+
-# 	xlab("decrease in R^2")+
-# 	guides(colour = guide_legend(nrow = 2),
-# 		fill = guide_legend(nrow = 2))+
-# 	theme_bw()+
-# 	theme(
-# 		panel.grid.minor = element_blank(),
-# 		panel.grid.major.x = element_blank(),
-# 		plot.subtitle = element_text(hjust=1),
-# 		axis.ticks.y=element_blank(),
-# 		axis.text.x=element_text(size=14),
-# 		axis.text.y=element_blank(),
-# 		axis.title.x=element_text(size=16),
-# 		legend.title=element_blank(),
-# 		axis.title.y=element_blank(),
-# 		strip.background = element_rect(colour = "black", fill = "white"),
-# 		strip.text.y=element_text(size=14, angle=180),
-# 		legend.box.background = element_rect(),
-# 		legend.text=element_text(size=14),
-# 		legend.position="bottom")
-#
-# pointfig2
-# ggsave("/net/bipolar/jedidiah/mutation/images/testpoint_facet_rsq.pdf", width=8, height=8)
-#
-#
-# ggplot()+
-# 	geom_point(data=facet_barplots2,
-# 		aes(x=rsq, y=factor(nsites), group=mod, colour=mod, fill=mod, shape=mod),
-# 		alpha=0.9, size=4, stroke=1)+
-# 	# geom_bar(stat="identity", position="dodge")+
-# 	scale_shape_manual("Model", values=c(rep(21,5),24))+
-# 	scale_fill_manual("Model", values=brewer.pal(10, "Spectral")[c(10:8,3,1,3)])+
-# 	scale_colour_manual("Model", values=c(brewer.pal(10, "Spectral")[c(10:8,3,1)], "black"))+
-# 	# facet_grid(category~nsites)+
-# 	facet_wrap(~category, ncol=1, strip.position="left")+
-# 	theme_bw()+
-# 	theme(
-# 		panel.grid.minor = element_blank(),
-# 		panel.grid.major.x = element_blank(),
-# 		plot.subtitle = element_text(hjust=1),
-# 		axis.ticks.y=element_blank(),
-# 		axis.text.x=element_text(size=14),
-# 		# axis.text.y=element_blank(),
-# 		axis.title.x=element_text(size=16),
-# 		legend.title=element_blank(),
-# 		axis.title.y=element_blank(),
-# 		strip.background = element_rect(colour = "black", fill = "white"),
-# 		strip.text.y=element_text(size=14, angle=180),
-# 		legend.box.background = element_rect(),
-# 		legend.text=element_text(size=14),
-# 		legend.position="bottom")
-#
-# ggsave("/net/bipolar/jedidiah/mutation/images/model_rsq_nsites_pt.pdf", width=8, height=12)
-#
-# 	# mutate(data=ifelse(mod %in% unique(m1m[[1]]$mod)[c(11,12)], "poly", "ERV")) %>%
-# 	# ggplot(aes(x=mod, y=aic_col, group=category, fill=mod))+
-# 	ggplot(facet_barplots, aes(x=mod, y=daic, group=category))+
-# 		# geom_rect(aes(xmin=0,xmax=4,ymin=0,ymax=1000,fill="grey20"), colour="black")+
-# 		geom_bar(aes(fill=mod), stat="identity", position="dodge", width=0.8)+
-# 		# annotate("rect", xmin=0, xmax=3.5, ymin=0, ymax=Inf, alpha=0.2, fill="grey20")+
-# 		# geom_vline(xintercept=1.5, linetype="dashed")+
-# 		geom_hline(yintercept=0)+
-# 		geom_hline(yintercept=10, linetype="dashed")+
-# 		geom_hline(yintercept=-10, linetype="dashed")+
-# 		# geom_point(size=4, aes(colour=mod))+
-# 		scale_y_continuous(trans = "asinh",
-# 			breaks=c(-1000,-100,-10,-1,0,1,10,100,1000),
-# 			expand = c(0,0))+
-# 		# scale_y_continuous(expand = c(0,0), limits=c(0,1.2))+
-# 		# scale_y_continuous(expand = c(0,0))+
-# 		# scale_y_continuous(breaks=seq(331000,355000,by=2000))+
-# 		facet_wrap(~category, ncol=9)+
-# 		# facet_wrap(~category, scales="free", dir="v")+
-# 		# scale_colour_manual(values=iwhPalette[1:7])+
-# 		# scale_fill_viridis(discrete=TRUE)+
-# 		# scale_fill_manual(values=c(viridis(4)[2:4], viridis(25)[24]))+
-# 		scale_fill_manual(values=viridis(5)[2:5])+
-# 		# scale_colour_viridis(discrete=TRUE)+
-# 		# scale_colour_manual(values=iwhPalette[c(8,2:5)])+
-# 		# scale_fill_manual(values=iwhPalette[c(8,2:5)])+
-# 		ylab(expression(paste(Delta,AIC)))+
-# 		theme_bw()+
-# 		theme(
-# 			# axis.text.x=element_text(size=14, angle=45, hjust=1, vjust=1),
-# 			panel.grid.minor = element_blank(),
-# 			panel.grid.major.x = element_blank(),
-# 			axis.text.x=element_blank(),
-# 			axis.text.y=element_text(size=14),
-# 			# axis.text.y=element_blank(),
-# 			axis.title.x=element_blank(),
-# 			legend.title=element_blank(),
-# 			axis.title.y=element_text(size=16),
-# 			strip.text.x=element_text(size=16),
-# 			legend.text=element_text(size=14),
-# 			legend.position="bottom")
-#
-# ggsave("/net/bipolar/jedidiah/mutation/images/testbar_facet.pdf", width=14, height=6)
-#
-# facet_barplots2 <- m1m[[2]] %>%
-# 	dplyr::select(mod, category, aic) %>%
-# 	filter(grepl("7", mod)) %>%
-# 	filter(grepl("_n", mod)) %>%
-# 	group_by(category) %>%
-# 	spread(mod, aic) %>%
-# 	mutate(aicref=mod_7mers_n.R2) %>%
-# 	gather(mod, aic, mod_7mers_features_n.R2:mod_7mers_n.R2) %>%
-# 	mutate(daic=aicref-aic) %>%
-# 	# mutate(daic=ifelse(daic<0,0.01,daic)) %>%
-# 	# mutate(max=max(aic), aic_col=normalize(aic)+0.1) %>% #data.frame
-# 	# filter(!grepl("down", mod)) %>%
-# 	# filter(!grepl("masked", mod)) %>%
-# 	# filter(!grepl("adj", mod)) %>%
-# 	# mutate(mod=factor(mod, levels=unique(m1m[[1]]$mod)[c(6,7,8,9,14,11,12)])) %>%
-# 	# mutate(mod=plyr::mapvalues(mod, unique(m1m[[2]]$mod)[c(10,1:4)], newmodnames_facet)) %>%
-# 	mutate(mod=plyr::mapvalues(mod, unique(m1m[[2]]$mod)[c(3:4)], newmodnames_facet[3:4])) %>%
-# 	# mutate(mod=factor(mod, levels=unique(m1m[[1]]$mod)[c(1:5)])) %>%
-# 	mutate(mod=factor(mod, levels=newmodnames_facet)) %>%
-# 	ungroup() %>%
-# 	mutate(category=gsub(" ", "\n", category)) %>%
-# 	mutate(category=factor(category, levels=oc3)) %>%
-# 	filter(grepl("features",mod))
-#
-# ggplot(facet_barplots2, aes(x=mod, y=daic, group=category))+
-# 	# geom_rect(aes(xmin=0,xmax=4,ymin=0,ymax=1000,fill="grey20"), colour="black")+
-# 	geom_bar(aes(fill=mod), stat="identity", position="dodge", width=0.8)+
-# 	# annotate("rect", xmin=0, xmax=3.5, ymin=0, ymax=Inf, alpha=0.2, fill="grey20")+
-# 	# geom_vline(xintercept=1.5, linetype="dashed")+
-# 	geom_hline(yintercept=0)+
-# 	geom_hline(yintercept=10, linetype="dashed")+
-# 	# geom_hline(yintercept=-10, linetype="dashed")+
-# 	# geom_point(size=4, aes(colour=mod))+
-# 	# scale_y_continuous(trans = "asinh",
-# 	scale_y_continuous(#trans = "biexp",
-# 		breaks=c(0,1,10,100,1000),
-# 		expand = c(0,0))+
-# 	# scale_y_continuous(expand = c(0,0), limits=c(0,1.2))+
-# 	# scale_y_continuous(expand = c(0,0))+
-# 	# scale_y_continuous(breaks=seq(331000,355000,by=2000))+
-# 	facet_wrap(~category, ncol=9)+
-# 	# facet_wrap(~category, scales="free", dir="v")+
-# 	# scale_colour_manual(values=iwhPalette[1:7])+
-# 	# scale_fill_viridis(discrete=TRUE)+
-# 	# scale_fill_manual(values=c(viridis(4)[2:4], viridis(25)[24]))+
-# 	scale_fill_manual(values=viridis(5)[5])+
-# 	# scale_colour_viridis(discrete=TRUE)+
-# 	# scale_colour_manual(values=iwhPalette[c(8,2:5)])+
-# 	# scale_fill_manual(values=iwhPalette[c(8,2:5)])+
-# 	ylab(expression(paste(Delta,AIC,"(ERV 7-mer model as reference)")))+
-# 	theme_bw()+
-# 	theme(
-# 		# axis.text.x=element_text(size=14, angle=45, hjust=1, vjust=1),
-# 		panel.grid.minor = element_blank(),
-# 		panel.grid.major.x = element_blank(),
-# 		axis.text.x=element_blank(),
-# 		axis.text.y=element_text(size=14),
-# 		# axis.text.y=element_blank(),
-# 		axis.title.x=element_blank(),
-# 		legend.title=element_blank(),
-# 		axis.title.y=element_text(size=16),
-# 		strip.text.x=element_text(size=16),
-# 		legend.text=element_text(size=14),
-# 		legend.position="bottom")
-#
-# ggsave("/net/bipolar/jedidiah/mutation/images/testbar_facet_7vF.pdf", width=14, height=6)
-#
-#
-# m1m[[2]] %>%
-# 	filter(grepl("_n|AV|dummy", mod)) %>%
-# 	group_by(category) %>%
-# 	do(reshape2::melt(outer(.$aic, .$aic, "-"))) %>%
-# 	filter(Var2>=Var1) %>%
-# 	ggplot(aes(x=Var2, y=Var1, fill=value))+
-# 		geom_tile()+
-# 		facet_wrap(~category)+
-# 		scale_fill_gradientn(colours=brewer.pal(10,"PiYG"),
-# 			trans = "asinh",
-# 			breaks=c(-1000,-100,-10,-1,0,1,10,100,1000))
-#
-# ggsave("/net/bipolar/jedidiah/mutation/images/aicheat.pdf")
-
+ggsave(paste0(analysisdir,"/images/testpoint_facet.pdf"), width=8, height=8)
 
 sampled_sites <- buildValidationData(input_sites, nsites)
 
@@ -815,15 +587,12 @@ sim_dnm_dat <- data.frame()
 
 for(MU in MU_types[c(1:5)]){
  sim_dnm_counts <- simdnm_list[[MU]] %>%
-	 # mutate(SEQ3=Category) %>%
 	 mutate(num_GC_flank = str_count(paste(substr(SEQ7,1,3), substr(SEQ7,5,7)), "C|G")) %>%
 	 mutate(GC_gp = ifelse(num_GC_flank<2, "g01",
 		 ifelse(num_GC_flank<4, "g23", "g46"))) %>%
-	 # mutate(Subtype=paste0(Category, "_", SEQ3)) %>%
 	 group_by(Category, SEQ3) %>%
 	 summarise(n=n()) %>%
 	 ungroup() %>%
-	 # group_by(Category) %>%
 	 mutate(prop=n/sum(n)) %>%
 	 mutate(dnmdat=MU)
 
@@ -853,44 +622,15 @@ ggplot(aes(x=mod, y=prop, fill=Category))+
 	geom_col(position="stack")+
 	coord_flip()+
 	scale_fill_manual("Mutation type", values=gp_cols, guide=FALSE)+
-	# scale_colour_manual(values=gp_cols)+
 	scale_y_continuous(expand = c(0,0))+
 	ylab("proportion of mutations")+
-	# guides(fill = guide_legend(
-	# 	title.position="top",
-	# 	title.hjust =0.5, ncol=3)) +
 	theme_bw()+
 	theme(
 		legend.position="bottom",
-		# legend.title=element_text(position="top"),
 		axis.title.x=element_blank(),
 		axis.title.y=element_blank(),
 		axis.text.x=element_text(hjust=1))
-ggsave(paste0(parentdir, "/images/rates_1_stack.pdf"), width=5, height=1.5)
-
-# terndat <- sim_dnm_dat2 %>%
-#  dplyr::select(Category, mod, SEQ7, n) %>%
-#  group_by(Category, SEQ7) %>%
-#  spread(mod, n)
-#
-#  #Base Plot
-# ternbase <- ggtern(data=terndat,aes(`7-mers+features`, OBS, `1000G 7-mers`, colour=Category))
-#
-#  #Plot with Points
-# ternbase+
-#  geom_point(alpha=0.5)+
-#  # facet_wrap(~Category)+
-#  theme_rgbw()
-# ggsave(paste0(parentdir, "/images/ternplot.pdf"), width=12, height=12)
-
-# ggplot(sim_dnm_dat2, aes(x=mod, y=prop, fill=factor(SEQ3)))+
-#  geom_col(position = position_fill(reverse = TRUE))+
-#  coord_flip()+
-#  scale_fill_viridis(discrete=TRUE)+
-#  # scale_fill_manual(values=gp_cols)+
-#  # scale_colour_manual(values=gp_cols)+
-#  facet_wrap(~Category)
-# ggsave(paste0(parentdir, "/images/rates_GC_stack.pdf"))
+ggsave(paste0(analysisdir, "/images/rates_1_stack.pdf"), width=5, height=1.5)
 
 # 1-mers
 sim_dnm_radar <- sim_dnm_dat2 %>%
@@ -1006,7 +746,7 @@ ggplot()+
 	 panel.grid.major.y=element_line(size = 2, colour = c(rep("grey80", length(plotlabs$y)), NA)),
 	 legend.position="bottom")
 
-ggsave(paste0(parentdir, "/images/rates_radar.pdf"), width=8, height=8)
+ggsave(paste0(analysisdir, "/images/rates_radar.pdf"), width=8, height=8)
 
 newmodnames_facetb <- c("3-mers", "5-mers", "7-mers", "7-mers+features", "1000G 7-mers")
 sim_dnm_plot <- merge(sim_dnm_dat, obs_dnm_counts, by=c("Category", "SEQ3")) %>%
@@ -1057,7 +797,7 @@ ggplot()+
 	theme_bw()+
 	theme(axis.title.y=element_blank(),
 		legend.position="bottom")
-ggsave(paste0(parentdir, "/images/sim_cor.pdf"), width=8, height=12)
+ggsave(paste0(analysisdir, "/images/sim_cor.pdf"), width=8, height=12)
 
 
 sim_dnm_plot %>% group_by(Category) %>% do(tidy(t.test(abs_err~mod, data=.)))
@@ -1069,7 +809,7 @@ ggplot()+
 	theme(#axis.title.y=element_blank(),
 		# axis.text.x=element_text(angle=90),
 		legend.position="bottom")
-ggsave(paste0(parentdir, "/images/sim_box.pdf"), width=12, height=8)
+ggsave(paste0(analysisdir, "/images/sim_box.pdf"), width=12, height=8)
 
 simdnmdat <- rbind(sim_dnm_dat, obs_dnm_counts) %>%
 	# mutate(Category=gsub("cpg_", "", Category)) %>%
@@ -1149,7 +889,7 @@ ggplot()+
 		strip.text=element_text(size=16),
 		legend.title=element_blank(),
 		legend.position="bottom")
-ggsave(paste0(parentdir, "/images/sim_pt.pdf"), width=14, height=12)
+ggsave(paste0(analysisdir, "/images/sim_pt.pdf"), width=14, height=12)
 
 ggplot()+
 	# geom_point(data=sim_dnm_dat, aes(x=abs_err, y=SEQ3, colour=dnmdat.x))+
@@ -1168,4 +908,4 @@ ggplot()+
 	theme_bw()+
 	theme(axis.title.y=element_blank(),
 		legend.position="bottom")
-ggsave(paste0(parentdir, "/images/sim_pt.pdf"), width=8, height=12)
+ggsave(paste0(analysisdir, "/images/sim_pt.pdf"), width=8, height=12)
