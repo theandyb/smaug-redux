@@ -120,3 +120,49 @@ subjectData <- merge(pheno, pcs, by="ID") %>%
 ped_b_ids <- subjectData[!(subjectData$ID %in% qplotdat$ID),] %>%
 	dplyr::select(ID_B=ID) %>%
 	mutate(ID=gsub("B", "", ID_B))
+
+# Subset ped2 to B ids
+qplotB <- qplotdat %>%
+	filter(ID %in% ped_b_ids$ID) %>%
+	mutate(ID=paste0(ID, "B"))
+
+qplot2 <- rbind(qplotdat, qplotB)
+subjectData <- merge(subjectData, qplot2, by="ID")
+
+# get per-person rates and filter IDs
+ind_counts <- merge(ind_counts, mct3, by="Motif") %>%
+	filter(ID %in% subjectData$ID) %>%
+	mutate(ERV_rel_rate=n/nMotifs,
+		subtype=paste0(Type, "_", Motif))
+
+###############################################################################
+# get signature loadings
+###############################################################################
+get_loads <- function(widedat, nmfdat){
+	sigloads <- data.frame(subtype=names(widedat),
+		sig1=coef(nmfdat)[1,],
+		sig2=coef(nmfdat)[2,],
+		sig3=coef(nmfdat)[3,]) %>%
+		mutate(sig1=sig1/sum(sig1), sig2=sig2/sum(sig2), sig3=sig3/sum(sig3)) %>%
+		gather(sig, value, sig1:sig3)
+	names(sigloads) <- c("subtype", "sig", "value")
+	sigloads <- sigloads %>%
+		mutate(Category=substr(subtype, 1, 5),
+			Sequence=substr(subtype, 7, 14))
+
+	return(sigloads)
+}
+
+###############################################################################
+# Prepare data and run NMF
+###############################################################################
+ind_wide <- ind_counts	%>%
+	dplyr::select(ID, subtype, ERV_rel_rate) %>%
+	spread(subtype, ERV_rel_rate)
+ind_wide[is.na(ind_wide)] <- 0
+# RESULT: subject x rel_rates_per_3mer
+
+ind_nmf <- nmf(as.matrix(ind_wide[,-c(1)]), 3, nrun=10)
+ind_pred <- predict(ind_nmf, "rows", prob=T)
+
+sigloads <- get_loads(ind_wide[,-c(1)], ind_nmf)

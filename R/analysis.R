@@ -135,7 +135,7 @@ get_loads <- function(widedat, nmfdat){
 		sig2=coef(nmfdat)[2,],
 		sig3=coef(nmfdat)[3,]) %>%
 		mutate(sig1=sig1/sum(sig1), sig2=sig2/sum(sig2), sig3=sig3/sum(sig3)) %>%
-		gather(subtype, value)
+		gather(sig, value, sig1:sig3)
 
 	names(sigloads) <- c("subtype", "sig", "value")
 	sigloads <- sigloads %>%
