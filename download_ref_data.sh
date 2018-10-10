@@ -54,7 +54,8 @@ cd reference_data
 # hg19 chromosome lengths
 #############################################################################
 status "Downloading hg19 chromosome lengths..."
-curl -s "https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes" > "hg19.genome"
+echo "chrom\tsize" > "hg19.genome"
+curl -s "https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes" >> "hg19.genome"
 status "Done!\n"
 
 ##############################################################################

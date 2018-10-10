@@ -55,7 +55,7 @@ status "Done!\n"
 # GC content in 10kb windows
 #############################################################################
 status "\nGC content in 10kb windows..."
-sed s/chr// "genome.10kb.sorted.bed" | bedtools nuc -fi "human_g1k_v37/human_g1k_v37.fasta" -bed - > "gc10kb.bed"
+sed s/chr// "genome.10kb.sorted.bed" | bedtools nuc -fi "human_g1k_v37/human_g1k_v37.fasta" -bed - | sed -n '1!p' |  cut -f1-3,5 > "gc10kb.bed"
 status "Done!\n"
 
 
