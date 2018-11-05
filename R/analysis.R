@@ -35,7 +35,7 @@ datadir <- paste0(analysisdir,
 summfile <- paste0(analysisdir, "/summaries/", mac, ".", data, ".summary")
 singfile <- paste0(analysisdir, "/singletons/full.singletons")
 bindir <- paste0(analysisdir, "/motif_counts/", nbp, "-mers/full")
-maskfile <- paste0(analysisdir, "/reference_data/testmask2.bed"
+maskfile <- paste0(analysisdir, "/reference_data/testmask2.bed")
 
 # Read and preprocess data
 full_data <- getData(summfile, singfile, bindir, maskfile, binw)
