@@ -35,9 +35,10 @@ datadir <- paste0(analysisdir,
 summfile <- paste0(analysisdir, "/summaries/", mac, ".", data, ".summary")
 singfile <- paste0(analysisdir, "/singletons/full.singletons")
 bindir <- paste0(analysisdir, "/motif_counts/", nbp, "-mers/full")
+maskfile <- paste0(analysisdir, "/reference_data/testmask2.bed")
 
 # Read and preprocess data
-full_data <- getData(summfile, singfile, bindir)
+full_data <- getData(summfile, singfile, bindir, maskfile, binw)
 gc()
 
 ################################################################################
@@ -498,7 +499,7 @@ sig_anc <- test_anc %>%
 	arrange(desc(prop))
 
 
-	if(build_logit){
+if(build_logit){
 	cat("Preparing data for logistic regression model...\n")
 
 	i<-3
@@ -506,17 +507,17 @@ sig_anc <- test_anc %>%
 		posfile <- paste0(analysisdir,
 		"/output/logmod_data/chr", chr, "_sites.txt")
 		dat <- full_data$sites %>%
-		# summfile1 <- sites %>%
-		# filter(Category==categ) %>%
-		filter(CHR==chr) %>%
-		mutate(Type=gsub("cpg_", "", Category2),
-		SEQA=substr(Motif, cbp-i, cbp+i),
-		SEQB=substr(Motif, cbp*3-i, cbp*3+i),
-		Sequence=paste0(SEQA, "(", SEQB, ")")) %>%
-		dplyr::select(CHR, POS, Sequence, Type) %>%
-		mutate(mut=1) %>%
-		spread(Type, mut, fill=0)
+			# summfile1 <- sites %>%
+			# filter(Category==categ) %>%
+			filter(CHR==chr) %>%
+			mutate(Type=gsub("cpg_", "", Category2),
+				SEQA=substr(Motif, cbp-i, cbp+i),
+				SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+				Sequence=paste0(SEQA, "(", SEQB, ")")) %>%
+			dplyr::select(CHR, POS, Sequence, Type) %>%
+			mutate(mut=1) %>%
+			spread(Type, mut, fill=0)
 
 		write.table(dat, posfile, col.names=F, row.names=F, quote=F, sep="\t")
-		}
 	}
+}
