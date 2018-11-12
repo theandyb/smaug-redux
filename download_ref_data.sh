@@ -98,7 +98,7 @@ status "Done!\n"
 # Lamin-associated domains
 #############################################################################
 status "\nLamin-associated domains..."
-curl -s  "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/laminB1Lads.txt.gz" | gunzip | awk 'NR>1 {print $2"\t"$3"\t"$4}' | bedtools sort -i - > "lamin_B1_LADS2.bed"
+curl -s  "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/laminB1Lads.txt.gz" | gunzip | awk '{print $2"\t"$3"\t"$4}' | bedtools sort -i - > "lamin_B1_LADS2.bed"
 status "Done!\n"
 #############################################################################
 # DNase hypersensitive sites
