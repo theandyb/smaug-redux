@@ -104,7 +104,7 @@ status "Done!\n"
 # DNase hypersensitive sites
 #############################################################################
 status "\nDNase hypersensitive sites..."
-curl -s "http://hgdownload.cse.ucsc.edu/goldenpath/hg19/encodeDCC/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.bed.gz" | gunzip | cut -f1-3 | bedtools sort -i - > "DHS.bed"
+curl -s "http://hgdownload.cse.ucsc.edu/goldenpath/hg19/encodeDCC/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.bed.gz" | gunzip | cut -f1-3 | sort -k1,1V -k2,2n - > "DHS.bed"
 status "Done!\n"
 #############################################################################
 # Replication timing
