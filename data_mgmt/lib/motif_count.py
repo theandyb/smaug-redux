@@ -67,10 +67,10 @@ def occurrences(string, sub):
 def out_results(outfile, outDict, bin_num = None):
     writer = csv.writer(outfile, delimiter = '\t')
     if bin_num:
-        for key, value in outDict.iteritems():
+        for key, value in outDict.items():
             writer.writerow([key] + [value] + [bin_num])
     else:
-        for key, value in outDict.iteritems():
+        for key, value in outDict.items():
             writer.writerow([key] + [value] + [bin_num])
 
 motif_dict = {}
@@ -121,5 +121,5 @@ else:
     outfile_name = Path(args.output) / outName
     outfile = open(outfile_name, 'w')
     writer = csv.writer(outfile, delimiter = '\t')
-    for key, value in motif_dict.iteritems():
+    for key, value in motif_dict.items():
         writer.writerow([key] + [value])
