@@ -91,6 +91,7 @@ if args.bins:
     fasta_reader = Fasta(args.input, read_ahead=10000)
     seq = fasta_reader[str(args.chromosome)]
     for index, row in bins.iterrows():
+        print("Counting in bin " + str(row['BIN']))
         for m in motif_list:
             motif_dict[m] = 0
         start = row['Start']
