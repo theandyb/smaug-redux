@@ -101,7 +101,7 @@ if args.bins:
         for m in motif_dict.keys():
             occ = occurrences(seqstr, m)
             motif_dict[m] += occ
-        out_results(outfile, motif_dict, args.bin)
+        out_results(outfile, motif_dict, args.bins)
     outfile.close()
 else:
     for m in motif_list:
