@@ -89,7 +89,7 @@ if args.bins:
     outfile_name = Path(args.output) / outName
     outfile = open(outfile_name, 'w')
     fasta_reader = Fasta(args.input, read_ahead=10000)
-    seq = fasta_reader['chr'+str(args.chromosome)]
+    seq = fasta_reader[str(args.chromosome)]
     for index, row in bins.iterrows():
         for m in motif_list:
             motif_dict[m] = 0
