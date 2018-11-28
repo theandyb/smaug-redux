@@ -93,8 +93,8 @@ if args.bins:
     for index, row in bins.iterrows():
         for m in motif_list:
             motif_dict[m] = 0
-        start = (row['Start'] - adj) if row['Start'] > 0 else start = 0
-        end = (row['End'] + adj) if row['End'] < len(seq) else end = row['End']
+        start = row['Start'] - adj if row['Start'] > 0 else start = 0
+        end = row['End'] + adj if row['End'] < len(seq) else end = row['End']
         seqstr = seq[start:end].seq
         for m in motif_dict.keys():
             occ = occurrences(seqstr, m)
