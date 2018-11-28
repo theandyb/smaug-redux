@@ -65,7 +65,7 @@ def occurrences(string, sub):
 
 # CHANGE THIS TO PASS IN A FILE OBJECT!
 def out_results(outfile, outDict, bin_num = None):
-    writer csv.writer(outfile, delimiter = '\t')
+    writer = csv.writer(outfile, delimiter = '\t')
     if bin_num:
         for key, value in outDict.iteritems():
             writer.writerow([key] + [value] + [bin_num])
@@ -79,6 +79,7 @@ with open(args.motifs) as f:
 adj = int((len(motif_list[0]) - 1) / 2)
 
 if args.bins:
+    print("Counting motifs in bins")
     bins = pd.read_table(args.bins, names = ['Chr', 'Start', 'End'])
     if args.chromosome == 0:
         sys.exit("Need to provide a chromosome number along with bins")
