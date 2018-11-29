@@ -1,7 +1,7 @@
 library(tidyverse)
 library(stringi)
 chromosomes <- seq(1,22)
-results_dir <- "/net/snowwhite/home/beckandy/research/smaug-redux/motif_counts/7-mers/full"
+results_dir <- "/net/snowwhite/home/beckandy/research/smaug-redux/motif_counts/3-mers/full"
 
 for(chr in chromosomes){
     cntFile <- paste0(results_dir, "/", "chr", chr, "_bins.tsv")
@@ -13,6 +13,6 @@ for(chr in chromosomes){
     df['nMotifs'] <- df$nMotif.x + df$nMotif.y
     df <- df %>% mutate(Motif = paste0(Motif, "(", RC ,")")) %>%
         select(Motif, BIN, nMotifs)
-    outFile <- paste0(results_dir, "/", "chr", chr, ".7-mer_motifs_10000kb_full.txt")
+    outFile <- paste0(results_dir, "/", "chr", chr, ".3-mer_motifs_1000kb_full.txt")
     write.table(df, outFile, quote = FALSE, row.name = FALSE)
 }
