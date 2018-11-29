@@ -14,6 +14,7 @@ from subprocess import call
 from pyfaidx import Fasta
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
+from math import ceil
 from pathlib import Path
 
 
