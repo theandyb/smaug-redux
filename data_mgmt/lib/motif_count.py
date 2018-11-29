@@ -73,6 +73,12 @@ def out_results(outfile, outDict, bin_num = None):
         for key, value in outDict.items():
             writer.writerow([key] + [value] + [bin_num])
 
+def motif_counter(motif_dict, seq, adj):
+    mer = (adj * 2) + 1
+    for i in range(0, (len(seq) - mer + 1)):
+        motif = seq[i:(i + mer)]
+        if motif in motif_dict: motif_dict[motif] += 1
+
 motif_dict = {}
 with open(args.motifs) as f:
     motif_list = f.read().splitlines()
@@ -99,9 +105,7 @@ if args.bins:
         end = row['End']
         if end < len(seq): end += adj
         seqstr = seq[start:end].seq
-        for m in motif_dict.keys():
-            occ = occurrences(seqstr, m)
-            motif_dict[m] += occ
+        motif_counter(motif_dict, seqstr, adj)
         out_results(outfile, motif_dict, row['BIN'])
     outfile.close()
 else:
