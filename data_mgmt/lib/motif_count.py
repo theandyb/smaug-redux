@@ -92,7 +92,7 @@ if args.bins:
     if args.chromosome == 0:
         sys.exit("Need to provide a chromosome number along with bins")
     bins = bins[bins['Chr']==('chr'+str(args.chromosome))]
-    bins['BIN'] = (bins['End']/1000000).astype(int)
+    bins['BIN'] = ((bins['End']/1000000).apply(ceil)).astype(int)
     outName = 'chr' + str(args.chromosome) + '_bins.csv'
     outfile_name = Path(args.output) / outName
     outfile = open(outfile_name, 'w')
