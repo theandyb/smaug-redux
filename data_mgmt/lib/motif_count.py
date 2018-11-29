@@ -96,16 +96,17 @@ if args.bins:
     outfile = open(outfile_name, 'w')
     fasta_reader = Fasta(args.input, read_ahead=10000)
     seq = fasta_reader[str(args.chromosome)]
+    seqstr = seq[0:len(seq)].seq
+    print("Sequence loaded!")
     for index, row in bins.iterrows():
         print("Counting in bin " + str(row['BIN']))
         for m in motif_list:
             motif_dict[m] = 0
         start = row['Start']
         if start > 0: start -= adj
-        end = row['End']
+        end = row['End'] + 1 
         if end < len(seq): end += adj
-        seqstr = seq[start:end].seq
-        motif_counter(motif_dict, seqstr, adj)
+        motif_counter(motif_dict, seqstr[start:end], adj)
         out_results(outfile, motif_dict, row['BIN'])
     outfile.close()
 else:
