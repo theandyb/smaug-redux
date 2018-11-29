@@ -94,7 +94,7 @@ if args.bins:
         sys.exit("Need to provide a chromosome number along with bins")
     bins = bins[bins['Chr']==('chr'+str(args.chromosome))]
     bins['BIN'] = ((bins['End']/1000000).apply(ceil)).astype(int)
-    outName = 'chr' + str(args.chromosome) + '_bins.csv'
+    outName = 'chr' + str(args.chromosome) + '_bins.tsv'
     outfile_name = Path(args.output) / outName
     outfile = open(outfile_name, 'w')
     fasta_reader = Fasta(args.input, read_ahead=10000)
