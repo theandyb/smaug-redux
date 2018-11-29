@@ -73,8 +73,10 @@ def out_results(outfile, outDict, bin_num = None):
         for key, value in outDict.items():
             writer.writerow([key] + [value] + [bin_num])
 
-def motif_counter(motif_dict, seq, adj):
+def motif_counter(motif_dict, motif_list, seq, adj):
     mer = (adj * 2) + 1
+    for m in motif_list:
+         motif_dict[m] = 0
     for i in range(0, (len(seq) - mer + 1)):
         motif = seq[i:(i + mer)]
         if motif in motif_dict: motif_dict[motif] += 1
@@ -100,13 +102,11 @@ if args.bins:
     print("Sequence loaded!")
     for index, row in bins.iterrows():
         print("Counting in bin " + str(row['BIN']))
-        for m in motif_list:
-            motif_dict[m] = 0
         start = row['Start']
         if start > 0: start -= adj
         end = row['End'] + 1 
-        if end < len(seq): end += adj
-        motif_counter(motif_dict, seqstr[start:end], adj)
+        if end < (len(seq) + 1) : end += adj
+        motif_counter(motif_dict, motif_list, seqstr[start:end], adj)
         out_results(outfile, motif_dict, row['BIN'])
     outfile.close()
 else:
