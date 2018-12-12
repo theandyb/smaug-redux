@@ -19,3 +19,17 @@
 4. `perl data_mgmt/data_prep/extract_sing.pl` which runs vcftools --singletons on the VCF files, outputing results to `singletons/` directory
 
 5. First pass through `analysis.r`
+
+## To-do / Wishlist
+
+1. Skip `extract_sing.pl` step -> get subject ids when generating summary files
+
+2. Use `motif_count.py` for all motif counting
+
+    * Generate counts in bins and then sum?
+    
+    * Second option for getting the counts across the entire genome?
+
+3. Run the logistic regression analyses
+
+4. Run the model evaluations 
