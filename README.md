@@ -4,7 +4,7 @@
 
 1. Run `download_ref_data.sh` and `prep_ref_data.sh` to download and process necessary reference data
 
-2. `perl data_mgmt/data_prep/vcf_to_summary.pl'
+2. Run `perl data_mgmt/data_prep/vcf_to_summary.pl'
         * Creates a copy of the input vcf file, with additional annotations (ancestral allele, k-mer centered at that site, the mutation type)
         * Also generates summary files
 
