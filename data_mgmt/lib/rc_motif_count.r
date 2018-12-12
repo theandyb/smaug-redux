@@ -13,6 +13,7 @@ for(chr in chromosomes){
     df['nMotifs'] <- df$nMotif.x + df$nMotif.y
     df <- df %>% mutate(Motif = paste0(Motif, "(", RC ,")")) %>%
         select(Motif, BIN, nMotifs)
+    df['CHR'] <- chr
     outFile <- paste0(results_dir, "/", "chr", chr, ".3-mer_motifs_1000kb_full.txt")
     write.table(df, outFile, quote = FALSE, row.name = FALSE)
 }
