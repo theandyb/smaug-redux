@@ -22,5 +22,5 @@ for(chr in chromosomes){
         select(Motif, BIN, nMotifs)
     df['CHR'] <- chr
     outFile <- paste0(results_dir, "/", "chr", chr, ".",k,"-mer_motifs_1000kb_full.txt")
-    write.table(df, outFile, quote = FALSE, row.name = FALSE)
+    write.table(df, outFile, sep="\t", quote = FALSE, row.name = FALSE)
 }
