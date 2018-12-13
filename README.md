@@ -16,6 +16,14 @@
         
         * Use `data_mgmt/lib/motif_count.py` and `data_mgmt/lib/rc_motif_count.r` to get these counts in 1Mb windows
 
+3. (option 2)
+
+```bash
+for i in \`seq 1 22\`; do
+python data_mgmt/data_prep/motif_count.py -i /path/to/smaug-redux/reference_data/human_g1k_v37/chr$i.fasta -m data_mgmt/data_prep/motifs7.txt -o /path/to/smaug-redux/motif_counts/7-mers/full -c $i -b /path/to/smaug-redux/reference_data/genome.1000kb.sorted.bed
+done
+```
+
 4. `perl data_mgmt/data_prep/extract_sing.pl` which runs vcftools --singletons on the VCF files, outputing results to `singletons/` directory
 
 5. First pass through `analysis.r`
