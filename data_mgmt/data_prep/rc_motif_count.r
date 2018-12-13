@@ -1,7 +1,14 @@
 library(tidyverse)
 library(stringi)
+library(here)
+library(yaml)
+
+args <- yaml.load_file(here("_config.yaml"))
+attach(args)
+
 chromosomes <- seq(1,22)
-results_dir <- "/net/snowwhite/home/beckandy/research/smaug-redux/motif_counts/3-mers/full"
+
+results_dir <- paste0(analysisdir, "/motif_counts/3-mers/full")
 
 for(chr in chromosomes){
     cntFile <- paste0(results_dir, "/", "chr", chr, "_bins.tsv")
