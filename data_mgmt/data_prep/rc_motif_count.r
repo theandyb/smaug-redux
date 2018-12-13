@@ -5,10 +5,10 @@ library(yaml)
 
 args <- yaml.load_file(here("_config.yaml"))
 attach(args)
-
+k <- "7"
 chromosomes <- seq(1,22)
 
-results_dir <- paste0(analysisdir, "/motif_counts/3-mers/full")
+results_dir <- paste0(analysisdir, "/motif_counts/",k,"-mers/full")
 
 for(chr in chromosomes){
     cntFile <- paste0(results_dir, "/", "chr", chr, "_bins.tsv")
@@ -21,6 +21,6 @@ for(chr in chromosomes){
     df <- df %>% mutate(Motif = paste0(Motif, "(", RC ,")")) %>%
         select(Motif, BIN, nMotifs)
     df['CHR'] <- chr
-    outFile <- paste0(results_dir, "/", "chr", chr, ".3-mer_motifs_1000kb_full.txt")
+    outFile <- paste0(results_dir, "/", "chr", chr, ".",k,"-mer_motifs_1000kb_full.txt")
     write.table(df, outFile, quote = FALSE, row.name = FALSE)
 }
