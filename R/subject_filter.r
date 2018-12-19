@@ -34,7 +34,7 @@ get_ind_data <- function(pedfile, phenofile, qplotfile, contamfile, vcfastfile, 
   qplotdat <- read_tsv(qplotfile)
   names(qplotdat)[1] <- "ID"
   
-  contam <- read_tsv(contamfile)
+  contam <- read_table2(contamfile)
   names(contam) <- c("ID", "FREEMIX", "CHIPMIX", "PLATE")
   
   vcfast <- read.table(vcfastfile,

@@ -44,7 +44,7 @@ gc()
 ################################################################################
 # Drop singletons in individuals with abnormal mutation signatures
 ################################################################################
-source('subject_filter.r')
+source('R/subject_filter.r')
 binDir <- paste0(analysisdir, "/motif_counts/3-mers/full")
 binPattern <- "1000kb_full.txt"
 
