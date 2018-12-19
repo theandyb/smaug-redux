@@ -19,11 +19,11 @@ invisible(sapply(gh_packages, function(x)
 	suppressMessages(require(x, character.only = TRUE))))
 
 # install/load CRAN packages
-packages <- c("tidyverse", "broom", "RColorBrewer", "MASS", "boot", "speedglm",
+packages <- c("broom", "RColorBrewer", "MASS", "boot", "speedglm",
 	"psych", "lmtest", "fmsb", "hexbin", "cowplot", "grid", "gtable", "gridExtra",
-	"yaml", "openxlsx", "Biostrings", "svglite", "NMF", "emdbook")
+	"openxlsx", "Biostrings", "svglite", "NMF", "emdbook", "tidyverse")
 invisible(sapply(packages, function(x)
-	suppressMessages(usePackage(x))))
+	suppressMessages(require(x, character.only = TRUE))))
 
 # Define additional variables for cleaner strings, etc.
 bink <- binw/1000

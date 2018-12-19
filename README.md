@@ -1,5 +1,40 @@
 # smaug-redux
 
+## Requirements
+
+My suggestion is to run this analysis in a conda virtualenv
+
+### R packages ()
+
+r-tidyverse
+r-devtools
+r-broom 
+r-rcolorbrewer
+r-mass
+r-speedglm
+r-boot
+r-devtools
+r-psych
+r-lmtest
+r-fmsb
+r-cowplot
+r-hexbin
+r-gridextra
+r-gtable
+r-nmf
+bioconductor-biostrings
+r-yaml
+r-openxlsx
+r-svglite
+r-emdbook
+
+### samtools-hybrid
+Can be installed using conda with
+
+```{bash}
+conda install -c andyb262 samtools-hybrid 
+```
+
 ## Instructions
 
 1. Run `download_ref_data.sh` and `prep_ref_data.sh` to download and process necessary reference data
