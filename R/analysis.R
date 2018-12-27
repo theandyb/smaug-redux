@@ -49,7 +49,7 @@ binDir <- paste0(analysisdir, "/motif_counts/3-mers/full")
 binPattern <- "1000kb_full.txt"
 
 subjectData <- get_ind_data(pedfile, phenofile, qplotfile, contamfile, vcfastfile, pcfile)
-ind_wide <- get_nmf_input(sites, binDir, binPattern, subjectData)
+ind_wide <- get_nmf_input(full_data$sites, binDir, binPattern, subjectData)
 keep_ids <- nmf_analysis(ind_wide, subjectData, analysisdir, outPlots = FALSE)
 
 
