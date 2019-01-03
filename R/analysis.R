@@ -85,6 +85,7 @@ testlist <- list()
 modlist <- list()
 
 kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, ratelist, testlist, modlist, plotOutput = TRUE) {
+	j <- i+1
 	nbptmp <- i*2+1
 	bindir <- paste0(analysisdir, "/motif_counts/", nbptmp, "-mers/full")
     
@@ -184,7 +185,7 @@ for(i in 1:4){
 
 # Prep data for logistic regression models
 
-logmodData <- function(sites, chr, outFile){
+logmodData <- function(sites, chr, outFile, cbp, i){
 	dat <- sites %>%
 			filter(CHR==chr) %>%
 			mutate(Type=gsub("cpg_", "", Category2),
@@ -201,8 +202,9 @@ if(build_logit){
 	cat("Preparing data for logistic regression model...\n")
 
 	i<-3
-	for(chr in 1:22){
+	for(chr in 1:21){
+		cat(paste0("Chromosome ", chr, "...\n"))
 		posfile <- paste0(analysisdir, "/output/logmod_data/chr", chr, "_sites.txt")
-		logmodData(full_data$sites, chr, posfile)
+		logmodData(full_data$sites, chr, posfile, cbp, i)
 	}
 }
