@@ -63,6 +63,8 @@ done
 
 5. First pass through `analysis.r`
 
+6. Follow the steps in `data_mgmt/per-site_dp/README.md` to extract depth information from glf files.
+
 ## To-do / Wishlist
 
 1. Skip `extract_sing.pl` step -> get subject ids when generating summary files

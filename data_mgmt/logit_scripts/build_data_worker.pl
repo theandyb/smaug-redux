@@ -23,39 +23,12 @@ my $config = LoadFile("$configpath/_config.yaml");
 my $adj = 3;
 my $subseq = $adj*2+1;
 my $data = $config->{data};
-my $parentdir = $config->{parentdir};
+my $parentdir = $config->{analysisdir};
 
 use lib "$FindBin::Bin/../lib";
 use SmaugFunctions qw(forkExecWait getMotif);
 
-# my $catind = $ARGV[0]-1;
-#
-# my @categs = qw( AT_CG AT_GC AT_TA GC_AT GC_CG GC_TA );
-#
-# my $categ = $categs[$catind];
-#
-# my $b1;
-# my $b2;
-# if(substr($categ, 0, 2) eq "AT"){
-# 	$b1="A";
-# 	$b2="T";
-# } elsif(substr($categ, 0, 2) eq "GC") {
-# 	$b1="C";
-# 	$b2="G";
-# }
-
-# Initialize gzipped output
-# my $outfile = "$parentdir/output/logmod_data/chr${chr}_${categ}_full.txt.gz";
-# open(my $outFH, "| gzip -c > $outfile") or
-#   die "Could not write to $outfile: $!";
-
-# foreach my $chr (reverse(1 .. 22)){
 foreach my $chr (1 .. 22){
-
-	# Create hash keyed by singleton positions, with input line as value
-	# print "Indexing chr${chr}: ${categ} singleton positions...\n";
-
-	# my $posfile = "$parentdir/output/logmod_data/chr${chr}_${categ}_sites.txt";
 	my $posfile = "$parentdir/output/logmod_data/chr${chr}_sites.txt";
 	print "Indexing chr${chr} singleton file: $posfile...\n";
 
