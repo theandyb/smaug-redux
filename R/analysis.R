@@ -195,6 +195,7 @@ logmodData <- function(sites, chr, outFile, cbp, i){
 			dplyr::select(CHR, POS, Sequence, Type) %>%
 			mutate(mut=1) %>%
 			spread(Type, mut, fill=0)
+	dat <- format(dat, scientific = FALSE)
 	write.table(dat, outFile, col.names=F, row.names=F, quote=F, sep="\t")
 }
 
