@@ -38,8 +38,8 @@ foreach my $chr (1 .. 22){
 	while (my $posline=<$posFH>) {
 		chomp($posline);
 		my @posfields=split(/\t/, $posline);
-        $key =~ s/^\s+|\s+$//g;
 		my $key = $posfields[1];
+        $key =~ s/^\s+|\s+$//g;
 
 		$poshash{$key} = $posline;
 	}
