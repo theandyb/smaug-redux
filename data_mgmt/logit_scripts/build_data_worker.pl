@@ -39,7 +39,6 @@ foreach my $chr (1 .. 22){
 		chomp($posline);
 		my @posfields=split(/\t/, $posline);
 		my $key = $posfields[1];
-        $key =~ s/^\s+|\s+$//g;
 
 		$poshash{$key} = $posline;
 	}
