@@ -195,7 +195,7 @@ logmodData <- function(sites, chr, outFile, cbp, i){
 			dplyr::select(CHR, POS, Sequence, Type) %>%
 			mutate(mut=1) %>%
 			spread(Type, mut, fill=0)
-	write_tsv(dat, outFile, quote_escape = FALSE)
+	write_tsv(dat, outFile, col_names = FALSE, quote_escape = FALSE)
 }
 
 if(build_logit){
