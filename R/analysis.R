@@ -195,7 +195,7 @@ logmodData <- function(sites, chr, outFile, cbp, i){
 			dplyr::select(CHR, POS, Sequence, Type) %>%
 			mutate(mut=1) %>%
 			spread(Type, mut, fill=0)
-	dat <- format(dat, scientific = FALSE)
+	dat$POS <- format(dat$POS, scientific=FALSE)
 	write.table(dat, outFile, col.names=F, row.names=F, quote=F, sep="\t")
 }
 
@@ -203,7 +203,7 @@ if(build_logit){
 	cat("Preparing data for logistic regression model...\n")
 
 	i<-3
-	for(chr in 1:21){
+	for(chr in 1:22){
 		cat(paste0("Chromosome ", chr, "...\n"))
 		posfile <- paste0(analysisdir, "/output/logmod_data/chr", chr, "_sites.txt")
 		logmodData(full_data$sites, chr, posfile, cbp, i)
