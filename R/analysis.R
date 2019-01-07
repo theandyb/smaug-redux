@@ -186,7 +186,7 @@ for(i in 1:4){
 # Prep data for logistic regression models
 
 logmodData <- function(sites, chr, outFile, cbp, i){
-	dat <- sites %>%
+	dat <- full_data$sites %>%
 			filter(CHR==chr) %>%
 			mutate(Type=gsub("cpg_", "", Category2),
 				SEQA=substr(Motif, cbp-i, cbp+i),
@@ -195,8 +195,7 @@ logmodData <- function(sites, chr, outFile, cbp, i){
 			dplyr::select(CHR, POS, Sequence, Type) %>%
 			mutate(mut=1) %>%
 			spread(Type, mut, fill=0)
-	dat$POS <- format(dat$POS, scientific=FALSE)
-	write.table(dat, outFile, col.names=F, row.names=F, quote=F, sep="\t")
+	write_tsv(dat, outFile, col_names = FALSE, quote_escape = FALSE)
 }
 
 if(build_logit){
