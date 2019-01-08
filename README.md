@@ -27,6 +27,7 @@ r-yaml
 r-openxlsx
 r-svglite
 r-emdbook
+r-bedr
 
 ### samtools-hybrid
 Can be installed using conda with
@@ -64,6 +65,8 @@ done
 5. First pass through `analysis.r`
 
 6. Follow the steps in `data_mgmt/per-site_dp/README.md` to extract depth information from glf files.
+
+7. Run `perl data_mgmt/logit_scripts/build_data_worker.pl` to build input for regression models.
 
 ## To-do / Wishlist
 
