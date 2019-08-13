@@ -119,7 +119,8 @@ status "\nRecombination rates..."
 curl -s "http://hgdownload.cse.ucsc.edu/gbdb/hg19/decode/SexAveraged.bw" > "SexAveraged.bw"
 bigWigToWig "SexAveraged.bw" "SexAveraged.wig"
 echo "CHR\tSTART\tEND\tRATE" > "recomb_rate.bed"
-awk 'NR>1' "SexAveraged.wig" | cat >> "recomb_rate.bed"
+awk 'NR>1' "SexAveraged.wig" | cat | sort -k1,1 -V -s >> "recomb_rate.bed"
+sed -i '/^#bed/d' ./recomb_rate.bed
 status "Done!\n"
 
 #############################################################################
