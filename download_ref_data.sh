@@ -110,7 +110,7 @@ status "Done!\n"
 # Replication timing
 #############################################################################
 status "\nReplication timing..."
-curl -s "http://mccarrolllab.com/wp-content/uploads/2015/03/Koren-et-al-Table-S2.zip" | gunzip > "lymph_rep_time.txt"
+wget http://mccarrolllab.org/wp-content/uploads/2015/03/Koren-et-al-Table-S2.zip; unzip Koren-et-al-Table-S2.zip; mv 'Koren et al Table S2.txt' lymph_rep_time.txt; rm Koren-et-al-Table-S2.zip
 status "Done!\n"
 #############################################################################
 # Recombination rate
