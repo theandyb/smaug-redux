@@ -14,3 +14,4 @@ load_libs.R
 slurm*.out
 11sept2018_strangePredictions/
 keepIds.csv
+.ipynb_checkpoints

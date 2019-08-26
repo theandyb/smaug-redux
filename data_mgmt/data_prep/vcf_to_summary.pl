@@ -20,7 +20,8 @@ my $relpath = $FindBin::Bin; # data_prep location
 my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
-my @macs = ("common", "singletons");
+#my @macs = ("common", "singletons");
+my @macs = ("doubletons");
 
 my $analysisdir = $config->{analysisdir};
 my $inputdir = $config->{inputdir};
@@ -74,6 +75,7 @@ if ($makecopy eq "copy") {
 	      # first command extracts singletons with filter PASS, including any that
 	      # occur in multiallelic sites
 	      my $maparse = "perl $relpath/ma_parse.pl --i $rawvcf";
+          my $maparse2 = "perl $relpath/ma_parse_double.pl --i $rawvcf";
 
 	      # second command fills ancestral allele to AA field
 	      my $aaparse = "perl $vcftoolsdir/perl/fill-aa -a $ancestral";
@@ -88,7 +90,9 @@ if ($makecopy eq "copy") {
 	      } elsif($mac eq "common"){
 	        my $filter = "bcftools view -i 'AC>=10' -f PASS";
 	        $pipe = "$filter $rawvcf | $infoparse | bgzip -c > $newvcf";
-	      }
+          } elsif($mac eq "doubletons"){
+            $pipe = "$maparse2 | $aaparse | $infoparse | bgzip -c > $newvcf";
+          }
 
 	      print STDERR "Input file: $rawvcf\n";
 	      print STDERR "Writing to: $newvcf...\n";
@@ -116,10 +120,12 @@ if ($script==1){
 	                            ->in($vcfdir);
 	  my $header;
 	  if($mac eq "common"){
-			$header = "\"CHR\tPOS\tREF\tALT\tAN\tMotif\tCategory\"";
+			$header = "\"CHR\tPOS\tREF\tALT\tAN\tMotif\tCategory\tAC\"";
 		} elsif ($mac eq "singletons"){
 			$header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\"";
-		}
+        } elsif ($mac eq "doubletons"){
+            $header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\tAC\"";
+        }
 
 	  my $summout = "$outdir/$mac.full.summary";
 	  my $headercmd = "echo $header > $summout";
@@ -143,12 +149,15 @@ if ($script==1){
 			if($mac eq "common"){
 				# $bcfquery = "bcftools query -i 'AC>=10 && FILTER=\"PASS\"' -r $chr"; # sanity check
 	      $bcfquery = "bcftools query -r $chr";
-	      $outputcols = "'%CHROM\t%POS\t%REF\t%ALT\t%INFO/AN\t%INFO/Motif\t%INFO/Category\n'";
+	      $outputcols = "'%CHROM\t%POS\t%REF\t%ALT\t%INFO/AN\t%INFO/Motif\t%INFO/Category\t%AC\n'";
 			} elsif ($mac eq "singletons"){
 				# $bcfquery = "bcftools query -i 'AC=1 && FILTER=\"PASS\"' -r $chr"; # sanity check
 	      $bcfquery = "bcftools query -r $chr";
 	      $outputcols = "'%CHROM\t%POS\t%REF\t%ALT\t%INFO/AA\t%INFO/AN\t%INFO/Motif\t%INFO/Category\n'";
-			}
+            } elsif ($mac eq "doubletons"){
+                $bcfquery = "bcftools query -r $chr";
+                $outputcols = "'%CHROM\t%POS\t%REF\t%ALT\t%INFO/AA\t%INFO/AN\t%INFO/Motif\t%INFO/Category\t%AC\n'";
+            }
 
 	    # my $cmd = "$bcfquery -f $outputcols $file > $outdir/chr$chr.summary";
 	    my $cmd = "$bcfquery -f $outputcols $file >> $summout";
