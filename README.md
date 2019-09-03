@@ -36,6 +36,10 @@ Can be installed using conda with
 conda install -c andyb262 samtools-hybrid 
 ```
 
+### Python Motif Counter
+
+In order to use the python version of the motif counter, you will also need to install `pyfaidx` and `biopython`. These can be installed with conda through either bioconda or conda-forge.
+
 ## Instructions
 
 1. Run `download_ref_data.sh` and `prep_ref_data.sh` to download and process necessary reference data
@@ -52,13 +56,7 @@ conda install -c andyb262 samtools-hybrid
         
         * Use `data_mgmt/lib/motif_count.py` and `data_mgmt/lib/rc_motif_count.r` to get these counts in 1Mb windows
 
-3. (option 2)
-
-```bash
-for i in `seq 1 22`; do
-python data_mgmt/data_prep/motif_count.py -i /path/to/smaug-redux/reference_data/human_g1k_v37/chr$i.fasta -m data_mgmt/data_prep/motifs7.txt -o /path/to/smaug-redux/motif_counts/7-mers/full -c $i -b /path/to/smaug-redux/reference_data/genome.1000kb.sorted.bed
-done
-```
+    1. Alternatively, you can use our python motif counter:
 
 4. `perl data_mgmt/data_prep/extract_sing.pl` which runs vcftools --singletons on the VCF files, outputing results to `singletons/` directory
 

@@ -20,8 +20,8 @@ my $relpath = $FindBin::Bin; # data_prep location
 my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
-#my @macs = ("common", "singletons");
-my @macs = ("doubletons");
+#my @macs = ("common", "singletons", "doubletons", "all");
+my @macs = ("all");
 
 my $analysisdir = $config->{analysisdir};
 my $inputdir = $config->{inputdir};
@@ -76,6 +76,7 @@ if ($makecopy eq "copy") {
 	      # occur in multiallelic sites
 	      my $maparse = "perl $relpath/ma_parse.pl --i $rawvcf";
           my $maparse2 = "perl $relpath/ma_parse_double.pl --i $rawvcf";
+          my $maparse3 = "perl $relpath/ma_parse_all.pl --i $rawvcf";
 
 	      # second command fills ancestral allele to AA field
 	      my $aaparse = "perl $vcftoolsdir/perl/fill-aa -a $ancestral";
@@ -92,6 +93,8 @@ if ($makecopy eq "copy") {
 	        $pipe = "$filter $rawvcf | $infoparse | bgzip -c > $newvcf";
           } elsif($mac eq "doubletons"){
             $pipe = "$maparse2 | $aaparse | $infoparse | bgzip -c > $newvcf";
+          } elsif($mac eq "all"){
+            $pipe = "$maparse3 | $aaparse | $infoparse | bgzip -c > $newvcf";
           }
 
 	      print STDERR "Input file: $rawvcf\n";
@@ -125,6 +128,8 @@ if ($script==1){
 			$header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\"";
         } elsif ($mac eq "doubletons"){
             $header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\tAC\"";
+        } elsif ($mac eq "all"){
+            $header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\tAC\"";                    
         }
 
 	  my $summout = "$outdir/$mac.full.summary";
@@ -154,7 +159,7 @@ if ($script==1){
 				# $bcfquery = "bcftools query -i 'AC=1 && FILTER=\"PASS\"' -r $chr"; # sanity check
 	      $bcfquery = "bcftools query -r $chr";
 	      $outputcols = "'%CHROM\t%POS\t%REF\t%ALT\t%INFO/AA\t%INFO/AN\t%INFO/Motif\t%INFO/Category\n'";
-            } elsif ($mac eq "doubletons"){
+            } elsif ( ($mac eq "doubletons") || ($mac eq "all") ){
                 $bcfquery = "bcftools query -r $chr";
                 $outputcols = "'%CHROM\t%POS\t%REF\t%ALT\t%INFO/AA\t%INFO/AN\t%INFO/Motif\t%INFO/Category\t%AC\n'";
             }

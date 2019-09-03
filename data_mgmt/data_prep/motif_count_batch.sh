@@ -10,4 +10,4 @@
 #SBATCH --array=1-22
 #SBATCH --requeue
 
-python motif_count.py -i /net/snowwhite/home/beckandy/research/smaug-redux/reference_data/human_g1k_v37/chr${SLURM_ARRAY_TASK_ID}.fasta -m motifs7.txt -o /net/snowwhite/home/beckandy/research/smaug-redux/motif_counts/7-mers/full -c ${SLURM_ARRAY_TASK_ID} -b /net/snowwhite/home/beckandy/research/smaug-redux/reference_data/genome.1000kb.sorted.bed
+python /net/snowwhite/home/beckandy/research/smaug-redux/data_mgmt/data_prep/motif_count.py -i /net/snowwhite/home/beckandy/research/smaug-redux/reference_data/human_g1k_v37/chr${SLURM_ARRAY_TASK_ID}.fasta -m /net/snowwhite/home/beckandy/research/smaug-redux/data_mgmt/data_prep/motifs7.txt -o /net/snowwhite/home/beckandy/research/smaug-redux/motif_counts/7-mers/full -c ${SLURM_ARRAY_TASK_ID}
