@@ -16,6 +16,8 @@ analysisdir: "/net/snowwhite/home/beckandy/research/smaug-redux"
 # vcf_to_summary.pl script:
 # -singletons
 # -common (all variants with MAC>10)
+# -doubletons
+# -all
 mac: "singletons"
 
 # adj defines number of bases upstream/downstream per motif
@@ -39,7 +41,7 @@ binw: 1000000
 # Define path to custom user library--used in log_mod.r
 # when distributing across jobs nodes that might not have
 # all of the same packages installed in shared libraries
-libpath: "/net/snowwhite/home/beckandy/R/x86_64-pc-linux-gnu-library/3.3"
+libpath: "/net/snowwhite/home/beckandy/miniconda3/envs/andy/lib/R/library" 
 
 # Random seed
 rseed: 36087318
