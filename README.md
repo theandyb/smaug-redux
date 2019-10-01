@@ -56,8 +56,6 @@ In order to use the python version of the motif counter, you will also need to i
         
         * Use `data_mgmt/lib/motif_count.py` and `data_mgmt/lib/rc_motif_count.r` to get these counts in 1Mb windows
 
-    1. Alternatively, you can use our python motif counter:
-
 4. `perl data_mgmt/data_prep/extract_sing.pl` which runs vcftools --singletons on the VCF files, outputing results to `singletons/` directory
 
 5. First pass through `analysis.r`
