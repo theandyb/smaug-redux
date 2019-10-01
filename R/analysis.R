@@ -164,7 +164,7 @@ kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, ratelist, testlist, mo
 			filter(n==16)
 
 		moddat <- parentdat %>%
-			do(tidy(glance(lm(ERV_rel_rate ~ b1+b2, data=.))))
+			do(glance(lm(ERV_rel_rate ~ b1+b2, data=.)))
 		modlist[[i]] <- moddat
 
 		hettests <- parentdat %>%

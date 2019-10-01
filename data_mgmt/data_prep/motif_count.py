@@ -105,7 +105,7 @@ if args.bins:
         print("Counting in bin " + str(row['BIN']))
         start = row['Start']
         if start > 0: start -= adj
-        end = row['End'] + 1 
+        end = row['End'] + 1
         if end < (len(seq) + 1) : end += adj
         motif_counter(motif_dict, motif_list, seqstr[start:end], adj)
         out_results(outfile, motif_dict, row['BIN'])
@@ -124,7 +124,7 @@ else:
             occ = occurrences(seqstr, m)
             motif_dict[m] += occ
         count += 1
-    outName = 'full_bins.csv'
+    outName = 'full.csv'
     outfile_name = Path(args.output) / outName
     outfile = open(outfile_name, 'w')
     writer = csv.writer(outfile, delimiter = '\t')
