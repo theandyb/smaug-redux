@@ -29,6 +29,10 @@ invisible(sapply(packages, function(x)
 bink <- binw/1000
 nbp <- adj*2+1
 
+orderedcats <- c("AT_CG", "AT_GC", "AT_TA", "GC_AT", "GC_CG", "GC_TA", "cpg_GC_AT", "cpg_GC_CG", "cpg_GC_TA")
+orderedcats1 <- c("AT_GC", "GC_AT", "cpg_GC_AT", "AT_CG", "GC_CG", "cpg_GC_CG", "AT_TA", "GC_TA", "cpg_GC_TA")
+orderedcats2 <- c("A>G", "C>T", "CpG>TpG", "A>C", "C>G", "CpG>GpG", "A>T", "C>A", "CpG>ApG")
+
 datadir <- paste0(analysisdir,
 	"/output/", nbp, "bp_", bink, "k_singletons_", data)
 
@@ -80,11 +84,11 @@ if (!file.exists(sitesFile)){
 full_data$aggseq <- get_aggseq(full_data$sites, full_data$mct)
 cbp <- 5
 p1 <- "motifs_full.txt"
-ratelist <- list()
-testlist <- list()
-modlist <- list()
 
-kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, ratelist, testlist, modlist, plotOutput = TRUE) {
+kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE) {
+	ratelist <- list()
+	testlist <- list()
+	modlist <- list()
 	j <- i+1
 	nbptmp <- i*2+1
 	bindir <- paste0(analysisdir, "/motif_counts/", nbptmp, "-mers/full")
@@ -177,10 +181,19 @@ kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, ratelist, testlist, mo
 	write.table(gpdat[,c("Type", "Motif", "nERVs", "nMotifs", "ERV_rel_rate")],
 		paste0(analysisdir, "/output/rates/", nbptmp, "bp_final_rates2.txt"),
 		col.names=T, row.names=F, quote=F, sep="\t")
+	return(list(modlist, ratelist, testlist))
 }
 
+ratelist <- list()
+testlist <- list()
+modlist <- list()
+
 for(i in 1:4){
-	kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, i, ratelist, testlist, modlist, plotOutput = FALSE)
+	res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, i, ratelist, testlist, modlist, plotOutput = FALSE)
+	ratelist[[i+1]] <- res[[1]] 
+	testlist[[i]] <- res[[2]]
+	modlist[[i]] <- res[[3]]
+	rm(res)
 }
 
 # Prep data for logistic regression models
@@ -208,3 +221,5 @@ if(build_logit){
 		logmodData(full_data$sites, chr, posfile, cbp, i)
 	}
 }
+
+# Code for evaluating the rates

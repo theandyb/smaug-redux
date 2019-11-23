@@ -52,17 +52,21 @@ In order to use the python version of the motif counter, you will also need to i
 
 3. `perl data_mgmt/data_prep/count_motifs_batch.pl`
         
-        * Counts occurence of each motif in the reference genome
+        * Counts occurrences of each motif in the reference genome
         
         * Use `data_mgmt/lib/motif_count.py` and `data_mgmt/lib/rc_motif_count.r` to get these counts in 1Mb windows
 
-4. `perl data_mgmt/data_prep/extract_sing.pl` which runs vcftools --singletons on the VCF files, outputing results to `singletons/` directory
+4. `perl data_mgmt/data_prep/extract_sing.pl` which runs vcftools --singletons on the VCF files, outputs results to `singletons/` directory
 
 5. First pass through `analysis.r`
 
 6. Follow the steps in `data_mgmt/per-site_dp/README.md` to extract depth information from glf files.
 
 7. Run `perl data_mgmt/logit_scripts/build_data_worker.pl` to build input for regression models.
+
+8. Run `perl data_mgmt/logit_scripts/runmod_batch.pl` to fit the models
+
+9. Run `perl data_mgmt/process_predicted/sort_pred_batch.pl` to generate per-chromosome/per-site files
 
 ## To-do / Wishlist
 
@@ -74,6 +78,4 @@ In order to use the python version of the motif counter, you will also need to i
     
     * Second option for getting the counts across the entire genome?
 
-3. Run the logistic regression analyses
-
-4. Run the model evaluations 
+3. Run the model evaluations 
