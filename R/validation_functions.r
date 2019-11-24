@@ -117,21 +117,28 @@ getAIC <- function(models){
 #' 
 #' @return data.frame containing simulated mutation data
 #' @export
-simMu <- function(data, EST, nobs, chunksize=50000){
-	mutated <- data.frame()
-	N <- nrow(data)
-	while(nrow(mutated) < nobs){
-		rowind <- sample(N, chunksize)
+simMu <- function(data, EST, nobs, chunksize=50000, rseed){
+  success <- FALSE
+  mutated <- data.frame()
+  seedit <- 1
+	while(!success){
+    # set.seed(rseed+seedit)
+		rowind <- sample(nrow(data), chunksize)
 		batch <- data[rowind,]
 		mu <- batch[,c(EST)]
 
 		batch$SIMOBS <- sapply(mu, function(x) rbinom(1,1,x))
-		mutated <- rbind(mutated, batch[batch$SIMOBS == 1,])
+    mutated <- rbind(mutated, batch[batch$SIMOBS==1,])
+
+    success <- nrow(mutated) > nobs
+    seedit <- seedit+1
 	}
 
-	mutated <- mutated[sample(nrow(mutated), nobs),] %>%
-		mutate(OBS=0, SIM="b")
-	return(mutated)
+  # last batch will go over; sample to desired # of simulated sites
+  # set.seed(rseed)
+  mutated <- mutated[sample(nrow(mutated), nobs),] %>%
+    mutate(OBS=0, SIM="b")
+  return(mutated)
 }
 
 #' Sample non-mutated sites
@@ -157,7 +164,7 @@ buildValidationData <- function(data, nsites){
 #' A longer description once you've figured out how this works
 #' @import magrittr
 #' @export
-mergeRates <- function(chrp_c, avrates, ratelist, rm5){
+mergeRates <- function(chrp_c, avrates, ratelist, rm5, test_anc, maskgpdat){
     adj2 <- 3
 
 	rates7 <- ratelist[[4]] %>%
@@ -185,29 +192,24 @@ mergeRates <- function(chrp_c, avrates, ratelist, rm5){
 	chrp_c <- merge(chrp_c, rates3, by=c("Category", "SEQ3"))
 	chrp_c <- merge(chrp_c, rates1, by=c("Category"))
 
-	if(exists("maskgpdat")){
-	rates_mask <- maskgpdat %>%
-		mutate(SEQ7=substr(Motif, 1, 7)) %>%
-		dplyr::select(Category=Type, SEQ7, MU_7M=ERV_rel_rate_mask)
-
+	if(dim(maskgpdat)[1] > 0){
+		rates_mask <- maskgpdat %>%
+			mutate(SEQ7=substr(Motif, 1, 7)) %>%
+			dplyr::select(Category=Type, SEQ7, MU_7M=ERV_rel_rate_mask)
 		chrp_c <- merge(chrp_c, rates_mask, by=c("Category", "SEQ7"), all.x=T)
 	}
 
 	rates_7C <- r5m %>%
-	mutate(SEQ7=substr(Motif, 1, 7)) %>%
-	dplyr::select(Category=Type, SEQ7, MU_7C=MAC10_rel_rate)
+		mutate(SEQ7=substr(Motif, 1, 7)) %>%
+		dplyr::select(Category=Type, SEQ7, MU_7C=MAC10_rel_rate)
 
 	rates_7D <- r5m %>%
 	mutate(SEQ7=substr(Motif, 1, 7)) %>%
 	dplyr::select(Category=Type, SEQ7, MU_7D=ERV_down_rel_rate)
 
-	# rates_anc <- ancgpdat %>%
-	#   mutate(SEQ7=substr(Motif, 1, 7)) %>%
-	#   dplyr::select(Category=Type, SEQ7, MU_7AN=ERV_rel_rate_anc)
-
 	rates_anc <- test_anc %>%
-	mutate(SEQ7=substr(Motif, 1, 7)) %>%
-	dplyr::select(Category=Type, SEQ7, MU_7AN=estimate2)
+		mutate(SEQ7=substr(Motif, 1, 7)) %>%
+		dplyr::select(Category=Type, SEQ7, MU_7AN=estimate2)
 
 	chrp_c <- merge(chrp_c, rates_7C, by=c("Category", "SEQ7"), all.x=T)
 	chrp_c <- merge(chrp_c, rates_7D, by=c("Category", "SEQ7"), all.x=T)
@@ -240,7 +242,7 @@ mergeRates <- function(chrp_c, avrates, ratelist, rm5){
 # 3. append columns for additional rate estimates
 # 4. Simulate DNMs with same data
 ##############################################################################
-validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates, rm5){
+validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates, r5m, test_anc, maskgpdat, parentdir){
 	orderedcats <- c("AT_CG", "AT_GC", "AT_TA", "GC_AT", "GC_CG", "GC_TA", "cpg_GC_AT", "cpg_GC_CG", "cpg_GC_TA")
 	orderedcats1 <- c("AT_GC", "GC_AT", "cpg_GC_AT", "AT_CG", "GC_CG", "cpg_GC_CG", "AT_TA", "GC_TA", "cpg_GC_TA")
 	orderedcats2 <- c("A>G", "C>T", "CpG>TpG", "A>C", "C>G", "CpG>GpG", "A>T", "C>A", "CpG>ApG")
@@ -258,13 +260,12 @@ validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates, r
 			SEQ3 = substr(SEQ, 3, 5))
 
 	cat("Appending additional rate estimates...\n")
-	eval_sites <- mergeRates(eval_sites, avrates, ratelist, rm5)
+	eval_sites <- mergeRates(eval_sites, avrates, ratelist, r5m, test_anc, maskgpdat)
 
 	cat("Generating simulated dataset...\n")
 	simulated_dnms <- simMu(data=eval_sites, EST="MU", nobs=nrow(input_dnms), rseed=rseed)
 
-	eval_sites_sim <- bind_rows(
-		list(eval_sites[eval_sites$OBS==0,], simulated_dnms)) %>%
+	eval_sites_sim <- bind_rows(list(eval_sites[eval_sites$OBS==0,], simulated_dnms)) %>%
 		group_by(Category) %>%
 		mutate(prop=cumsum(OBS)/sum(OBS)) %>%
 		arrange(MU, prop) %>%
@@ -348,3 +349,139 @@ validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates, r
 	write.table(type_models_summary, typefitfile, col.names=T, row.names=F, quote=F, sep="\t")
 	return(list(combined_models_summary, type_models_summary))
 	}
+
+get_test_anc <- function(full_data, parentdir){
+	cbp <- 5
+	i <- 3
+	nbp2 <- 7
+
+	sites_c_hc <- full_data$sites %>%
+		filter(toLower(ALT) != toLower(AA))
+
+	prop <- nrow(sites_c_hc)/nrow(full_data$sites)
+
+	sites_c_hc <- sites_c_hc %>%
+		mutate(SEQA=substr(Motif, cbp-i, cbp+i),
+			SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+			Motif=paste0(SEQA, "(", SEQB, ")"))
+
+	bindir <- paste0(parentdir, "/motif_counts/", nbp2, "-mers/full")
+	p1 <- "motifs_full.txt"
+	bins <- get_bins(bindir, p1)
+	mct <- get_mct(bins)
+	ancaggseq <- get_aggseq(sites_c_hc, mct)
+
+	maskdir <- paste0(parentdir, "/motif_counts/", nbp2, "-mers/mask")
+	p1 <- "motifs_mask.txt"
+	maskbins <- get_bins(maskdir, p1)
+	maskmct <- get_mct(maskbins)
+
+	ancgpdat <- ancaggseq %>%
+		mutate(Type=gsub("cpg_", "", Category2)) %>%
+		dplyr::select(Type, Motif,
+			nERVs_anc=nERVs, nMotifs_anc=nMotifs,
+			ERV_rel_rate_anc=rel_prop)
+
+	ancgpdat <- merge(ratelist[[4]], ancgpdat, by=c("Type", "Motif"))
+
+	test_anc <- ancgpdat %>%
+		group_by(Type, Motif) %>%
+		do(tidy(prop.test(c(.$nERVs, .$nERVs_anc), c(.$nMotifs, .$nMotifs_anc*prop)))) %>%
+		dplyr::select(Type, Motif, estimate1, estimate2, statistic, p.value)
+
+	test_anc <- merge(test_anc, ancgpdat, by=c("Type", "Motif"))
+	return(test_anc)
+}
+
+get_r5m <- function(ratelist, avrates, parentdir, nbp, full_data, cbp, binw, maskfile){
+    rates7 <- ratelist[[4]]
+    r5m <- merge(rates7, avrates, by=c("Type", "Motif"))
+
+    r5m$Category2 <- ifelse(substr(r5m$Motif,4,5)=="CG", paste0("cpg_",r5m$Type),r5m$Type)
+
+    r5m <- r5m %>%
+        mutate(Category2 = plyr::mapvalues(Category2, orderedcats1, orderedcats2))
+
+    r5m$Category2 <- factor(r5m$Category2, levels=orderedcats2)
+
+    r5m$prop_diff <- ( r5m$eur / (mean(r5m$eur)/mean(r5m$ERV_rel_rate)) ) / r5m$ERV_rel_rate
+    r5m$prop_diff4 <- r5m$prop_diff
+    r5m$prop_diff4[r5m$prop_diff< 0.5] <- 0.5
+    r5m$prop_diff4[r5m$prop_diff>2] <- 2
+
+    r5m$v2 <- substr(r5m$Motif,1,3)
+    r5m$v2a <- as.character(lapply(as.vector(r5m$v2), reverse_chars))
+    r5m$v2a <- factor(r5m$v2a)
+    r5m$v3 <- substr(r5m$Motif,3+2,3*2+1)
+
+    ##############################################################################
+    # Get BRIDGES MAC10+ rates
+    ##############################################################################
+    commonfile <- paste0(parentdir, "/summaries/common.full.summary")
+    bindir <- paste0(parentdir, "/motif_counts/", nbp, "-mers/full")
+    common_data <- getData(summfile=commonfile, bindir=bindir, maskfile = maskfile, binw = binw)
+    common_data$aggseq <- get_aggseq(common_data$sites, common_data$mct)
+
+    i <- 3
+    gpdat <- common_data$aggseq %>%
+        mutate(Type=gsub("cpg_", "", Category2),
+            SEQA=substr(Motif, cbp-i, cbp+i),
+            SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+            Motif=paste0(SEQA, "(", SEQB, ")")) %>%
+            dplyr::select(Type, Motif, nERVs) %>%
+            group_by(Type, Motif) %>%
+            summarise(nMAC10=sum(nERVs))
+
+    r5m <- merge(r5m, gpdat, by=c("Type", "Motif")) %>%
+    	mutate(MAC10_rel_rate=nMAC10/nMotifs)
+
+    set.seed(sum(r5m$nMAC10))
+    ervs_down <- full_data$sites[sample(nrow(full_data$sites), sum(r5m$nMAC10)),]
+    ervs_down_aggseq <- get_aggseq(ervs_down, common_data$mct)
+
+    i <- 3
+    gpdat <- ervs_down_aggseq %>%
+    mutate(Type=gsub("cpg_", "", Category2),
+        SEQA=substr(Motif, cbp-i, cbp+i),
+        SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+        Motif=paste0(SEQA, "(", SEQB, ")")) %>%
+        dplyr::select(Type, Motif, nERVs) %>%
+        group_by(Type, Motif) %>%
+        summarise(nERVs_down=sum(nERVs))
+
+    r5m <- merge(r5m, gpdat, by=c("Type", "Motif")) %>%
+        mutate(ERV_down_rel_rate=nERVs_down/nMotifs)
+    return(r5m)
+}
+
+get_maskgpdat <- function(parentdir, full_data, ratelist){
+	nbp2 <- 7
+	data2 <- "mask"
+
+	maskdir <- paste0(parentdir, "/motif_counts/", nbp2, "-mers/mask")
+	p1 <- "motifs_mask.txt"
+	maskbins <- get_bins(maskdir, p1)
+
+	# maskbins <- read.table(maskbinfile, header=T, stringsAsFactors=F, check.names=F)
+	maskmct <- get_mct(maskbins)
+
+	cbp <- 5
+	i <- 3
+	masktmp <- full_data$sites %>%
+		filter(MASK==0) %>%
+		mutate(SEQA=substr(Motif, cbp-i, cbp+i),
+			SEQB=substr(Motif, cbp*3-i, cbp*3+i),
+			Motif=paste0(SEQA, "(", SEQB, ")"))
+
+	maskaggseq <- get_aggseq(masktmp, maskmct)
+	rm(masktmp)
+
+	maskgpdat <- maskaggseq %>%
+		mutate(Type=gsub("cpg_", "", Category2)) %>%
+		dplyr::select(Type, Motif,
+			nERVs_mask=nERVs, nMotifs_mask=nMotifs,
+			ERV_rel_rate_mask=rel_prop)
+
+	maskgpdat <- merge(ratelist[[4]], maskgpdat, by=c("Type", "Motif"))
+	return(maskgpdat)
+}

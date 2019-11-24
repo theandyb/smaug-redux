@@ -6,13 +6,17 @@ library(smaug)
 library(tidyverse)
 library(broom)
 library(readxl)
+library(emdbook) #lambertW
 library(magrittr)
 
 args <- yaml.load_file("./_config.yaml")
 attach(args)
 
+source(paste0(analysisdir, "/R/validation_functions.r"))
+
 # We need the ratelist from the kmer analysis
 sitesFile <- paste0(analysisdir, "/output/intermediates/filtered.sites.csv.gz")
+maskfile <- paste0(analysisdir, "/reference_data/testmask2.bed")
 
 bink <- binw/1000
 nbp <- adj*2+1
@@ -27,11 +31,11 @@ full_data$mct <- get_mct(full_data$bins)
 full_data$aggseq <- get_aggseq(full_data$sites, full_data$mct)
 cbp <- 5
 p1 <- "motifs_full.txt"
-
+bink <- binw/1000 
 # Generate r5m (from AV_rates.r)
 avrates <- read_excel(paste0(analysisdir, "/reference_data/AV_rates.xlsx"), sheet=10)
 names(avrates) <- c("Motif", "alt", "afr", "asn", "eur", "refrev", "altrev")
-rates7 <- ratelist[[4]]
+
 
 avrates$CAT <- paste0(substr(avrates$Motif,4,4), substr(avrates$alt, 4,4))
 avrates$Category[avrates$CAT=="AC" | avrates$CAT=="TG"] <- "AT_CG"
@@ -45,28 +49,6 @@ avrates$Motif <- paste0(avrates$Motif, "(", avrates$refrev, ")")
 
 avrates <- avrates %>%
   dplyr::select(Type=Category, Motif, eur)
-
-r5m <- merge(rates7, avrates, by=c("Type", "Motif"))
-
-r5m$Category2 <- ifelse(substr(r5m$Motif,4,5)=="CG",
-  paste0("cpg_",r5m$Type),
-  r5m$Type)
-
-r5m <- r5m %>%
-  mutate(Category2 = plyr::mapvalues(Category2, orderedcats1, orderedcats2))
-
-r5m$Category2 <- factor(r5m$Category2, levels=orderedcats2)
-
-r5m$prop_diff <- (r5m$eur/(mean(r5m$eur)/mean(r5m$ERV_rel_rate)))/r5m$ERV_rel_rate
-r5m$prop_diff4 <- r5m$prop_diff
-r5m$prop_diff4[r5m$prop_diff< 0.5] <- 0.5
-r5m$prop_diff4[r5m$prop_diff>2] <- 2
-
-r5m$v2 <- substr(r5m$Motif,1,3)
-r5m$v2a <- as.character(lapply(as.vector(r5m$v2), reverse_chars))
-r5m$v2a <- factor(r5m$v2a)
-r5m$v3 <- substr(r5m$Motif,3+2,3*2+1)
-rm(rates7)
 
 kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE) {
 	testlist <- list()
@@ -182,6 +164,10 @@ res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, 0, plotOutput = FALS
 ratelist[[1]] <- res[[2]] 
 rm(res)
 
+r5m <- get_r5m(ratelist, avrates, analysisdir, nbp, full_data, cbp, binw, maskfile)
+
+test_anc <- get_test_anc(full_data, analysisdir)
+
 # Read and process the data
 validation_file <- paste0(analysisdir, "/output/predicted/validation_sites.txt")
 input_sites <- read_tsv(validation_file, col_names = c("CHR", "POS", "MU", "OBS", "Category", "SEQ", "ID"))
@@ -190,7 +176,9 @@ input_sites %<>% filter(MU > 0)
 input_dnms <- input_sites %>% filter(ID != "all") %>% mutate(SIM = "a", SIMOBS = 0)
 input_sites %<>% filter(ID == "all")
 
-m500k <- validationPipe(input_sites, input_dnms, 500000, ratelist, avrates, rm5)
-m1m <- validationPipe(input_sites, input_dnms, 1000000, ratelist, avrates, rm5)
-m2m <- validationPipe(input_sites, input_dnms, 2000000, ratelist, avrate, rm5s)
-m3m <- validationPipe(input_sites, input_dnms, 3000000, ratelist, avrates, rm5)
+maskgpdat <- get_maskgpdat(analysisdir, full_data, ratelist)
+
+m500k <- validationPipe(input_sites, input_dnms, 500000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
+m1m <- validationPipe(input_sites, input_dnms, 1000000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
+m2m <- validationPipe(input_sites, input_dnms, 2000000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
+m3m <- validationPipe(input_sites, input_dnms, 3000000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
