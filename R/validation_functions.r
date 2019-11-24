@@ -157,26 +157,26 @@ buildValidationData <- function(data, nsites){
 #' A longer description once you've figured out how this works
 #' @import magrittr
 #' @export
-mergeRates <- function(chrp_c, avrates, ratelist){
+mergeRates <- function(chrp_c, avrates, ratelist, rm5){
     adj2 <- 3
 
 	rates7 <- ratelist[[4]] %>%
-		mutate(SEQ7=substr(Motif, 1, 7)) %>%
+		dplyr::mutate(SEQ7=substr(Motif, 1, 7)) %>%
 		dplyr::select(Category=Type, SEQ7, MU_7=ERV_rel_rate)
 
 	rates5 <- ratelist[[3]] %>%
-		mutate(SEQ5=substr(Motif, 1, 5)) %>%
+		dplyr::mutate(SEQ5=substr(Motif, 1, 5)) %>%
 		dplyr::select(Category=Type, SEQ5, MU_5=ERV_rel_rate)
 
 	rates3 <- ratelist[[2]] %>%
-		mutate(SEQ3=substr(Motif, 1, 3)) %>%
+		dplyr::mutate(SEQ3=substr(Motif, 1, 3)) %>%
 		dplyr::select(Category=Type, SEQ3, MU_3=ERV_rel_rate)
 
 	rates1 <- ratelist[[1]] %>%
 		dplyr::select(Category=Type, MU_1=ERV_rel_rate)
 
 	rates7A <- avrates %>%
-		mutate(SEQ7=substr(Motif, 1, 7)) %>%
+		dplyr::mutate(SEQ7=substr(Motif, 1, 7)) %>%
 		dplyr::select(Category=Type, SEQ7, MU_7A=eur)
 
 	chrp_c <- merge(chrp_c, rates7A, by=c("Category", "SEQ7"), all.x=T)
@@ -240,7 +240,7 @@ mergeRates <- function(chrp_c, avrates, ratelist){
 # 3. append columns for additional rate estimates
 # 4. Simulate DNMs with same data
 ##############################################################################
-validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates){
+validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates, rm5){
 	orderedcats <- c("AT_CG", "AT_GC", "AT_TA", "GC_AT", "GC_CG", "GC_TA", "cpg_GC_AT", "cpg_GC_CG", "cpg_GC_TA")
 	orderedcats1 <- c("AT_GC", "GC_AT", "cpg_GC_AT", "AT_CG", "GC_CG", "cpg_GC_CG", "AT_TA", "GC_TA", "cpg_GC_TA")
 	orderedcats2 <- c("A>G", "C>T", "CpG>TpG", "A>C", "C>G", "CpG>GpG", "A>T", "C>A", "CpG>ApG")
@@ -258,7 +258,7 @@ validationPipe <- function(input_sites, input_dnms, nsites, ratelist, avrates){
 			SEQ3 = substr(SEQ, 3, 5))
 
 	cat("Appending additional rate estimates...\n")
-	eval_sites <- mergeRates(eval_sites, avrates, ratelist)
+	eval_sites <- mergeRates(eval_sites, avrates, ratelist, rm5)
 
 	cat("Generating simulated dataset...\n")
 	simulated_dnms <- simMu(data=eval_sites, EST="MU", nobs=nrow(input_dnms), rseed=rseed)

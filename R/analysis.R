@@ -86,7 +86,6 @@ cbp <- 5
 p1 <- "motifs_full.txt"
 
 kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE) {
-	ratelist <- list()
 	testlist <- list()
 	modlist <- list()
 	j <- i+1
@@ -190,11 +189,15 @@ modlist <- list()
 
 for(i in 1:4){
 	res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, i, ratelist, testlist, modlist, plotOutput = FALSE)
-	ratelist[[i+1]] <- res[[1]] 
-	testlist[[i]] <- res[[2]]
-	modlist[[i]] <- res[[3]]
+	modlist[[i]] <- res[[1]]
+	ratelist[[i+1]] <- res[[2]] 
+	testlist[[i]] <- res[[3]]
 	rm(res)
 }
+
+res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, 0, ratelist, testlist, modlist, plotOutput = FALSE)
+ratelist[[1]] <- res[[2]] 
+rm(res)
 
 # Prep data for logistic regression models
 
