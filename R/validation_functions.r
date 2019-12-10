@@ -356,7 +356,7 @@ get_test_anc <- function(full_data, parentdir){
 	nbp2 <- 7
 
 	sites_c_hc <- full_data$sites %>%
-		filter(toLower(ALT) != toLower(AA))
+		filter(tolower(ALT) != tolower(AA))
 
 	prop <- nrow(sites_c_hc)/nrow(full_data$sites)
 
