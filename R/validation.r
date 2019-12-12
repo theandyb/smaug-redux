@@ -178,7 +178,7 @@ input_sites %<>% filter(ID == "all")
 
 maskgpdat <- get_maskgpdat(analysisdir, full_data, ratelist)
 
-m500k <- validationPipe(input_sites, input_dnms, 500000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
-m1m <- validationPipe(input_sites, input_dnms, 1000000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
-m2m <- validationPipe(input_sites, input_dnms, 2000000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
-m3m <- validationPipe(input_sites, input_dnms, 3000000, ratelist, avrates, rm5, test_anc, maskgpdat, analysisdir)
+m500k <- validationPipe(input_sites, input_dnms, 500000, ratelist, avrates, r5m, test_anc, maskgpdat, analysisdir)
+m1m <- validationPipe(input_sites, input_dnms, 1000000, ratelist, avrates, r5m, test_anc, maskgpdat, analysisdir)
+m2m <- validationPipe(input_sites, input_dnms, 2000000, ratelist, avrates, r5m, test_anc, maskgpdat, analysisdir)
+m3m <- validationPipe(input_sites, input_dnms, 3000000, ratelist, avrates, r5m, test_anc, maskgpdat, analysisdir)
