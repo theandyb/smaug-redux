@@ -144,10 +144,10 @@ status "Done!\n"
 status "\nDe novo mutations..."
 mkdir DNMs
 # GoNL
-curl -s "https://molgenis26.target.rug.nl/downloads/gonl_public/variants/release5.2/GoNL_DNMs.txt" > "DNMs/GoNL_DNMs.txt"
+curl -s "https://molgenis26.gcc.rug.nl/downloads/gonl_public/variants/release5.2/GoNL_DNMs.txt" > "DNMs/GoNL_DNMs.txt"
 
 # ITMI
-curl -s "https://media.nature.com/original/nature-assets/ng/journal/v48/n8/extref/ng.3597-S3.xlsx" > "DNMs/goldmann_2016_dnms.xlsx"
+curl -s "https://static-content.springer.com/esm/art%3A10.1038%2Fng.3597/MediaObjects/41588_2016_BFng3597_MOESM69_ESM.xlsx" > "DNMs/goldmann_2016_dnms.xlsx"
 
 status "Done!\n"
 #############################################################################
@@ -178,7 +178,7 @@ chmod +x liftOver
 
 curl -s "http://hgdownload.cse.ucsc.edu/goldenPath/hg18/liftOver/hg18ToHg19.over.chain.gz" > "hg18ToHg19.over.chain.gz"
 
-"liftOver" "2xHARs.bed" "hg18ToHg19.over.chain.gz" "2xHARs.hg19.bed" "unlifted.bed"
+./liftOver "2xHARs.bed" "hg18ToHg19.over.chain.gz" "2xHARs.hg19.bed" "unlifted.bed"
 
 bedtools sort -i "2xHARs.hg19.bed" > "2xHARs.hg19.sort.bed"
 status "Done!\n"
@@ -186,6 +186,6 @@ status "Done!\n"
 # Aggarwala & Voight rates
 #############################################################################
 status "\nAggarwala & Voight rates..."
-curl -s "https://media.nature.com/original/nature-assets/ng/journal/v48/n4/extref/ng.3511-S2.xlsx" > "AV_rates.xlsx"
+curl -s "https://static-content.springer.com/esm/art%3A10.1038%2Fng.3511/MediaObjects/41588_2016_BFng3511_MOESM210_ESM.xlsx" > "AV_rates.xlsx"
 status "Done!\n"
 cd ../
