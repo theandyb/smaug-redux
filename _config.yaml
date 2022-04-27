@@ -41,10 +41,10 @@ binw: 1000000
 # Define path to custom user library--used in log_mod.r
 # when distributing across jobs nodes that might not have
 # all of the same packages installed in shared libraries
-libpath: "/net/snowwhite/home/beckandy/miniconda3/envs/andy/lib/R/library" 
+libpath: "/net/snowwhite/home/beckandy/miniconda3/envs/andy/lib/R/library"
 
 # Random seed
-rseed: 36087318
+rseed: 121213
 
 ##############################################################################
 # Define location and naming convention of raw input vcfs, if we are using the

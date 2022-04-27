@@ -21,7 +21,8 @@ my $configpath = dirname(dirname($relpath));
 my $config = LoadFile("$configpath/_config.yaml");
 
 #my @macs = ("common", "singletons", "doubletons", "all");
-my @macs = ("all");
+my @macs = ("common", "singletons");
+#my @macs = ("all");
 
 my $analysisdir = $config->{analysisdir};
 my $inputdir = $config->{inputdir};
@@ -129,7 +130,7 @@ if ($script==1){
         } elsif ($mac eq "doubletons"){
             $header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\tAC\"";
         } elsif ($mac eq "all"){
-            $header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\tAC\"";                    
+            $header = "\"CHR\tPOS\tREF\tALT\tAA\tAN\tMotif\tCategory\tAC\"";
         }
 
 	  my $summout = "$outdir/$mac.full.summary";
