@@ -44,7 +44,7 @@ In order to use the python version of the motif counter, you will also need to i
 
 1. Run `download_ref_data.sh` and `prep_ref_data.sh` to download and process necessary reference data
 
-2. Run `perl data_mgmt/data_prep/vcf_to_summary.pl`
+2. Run `perl data_mgmt/data_prep/vcf_to_summary.pl copy`
        
        * Creates a copy of the input vcf file, with additional annotations (ancestral allele, k-mer centered at that site, the mutation type)
         
