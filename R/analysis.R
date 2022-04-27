@@ -82,16 +82,17 @@ if (!file.exists(sitesFile)){
 # Get relative mutation rates per subtype; plot as heatmap
 ##############################################################################
 full_data$aggseq <- get_aggseq(full_data$sites, full_data$mct)
-cbp <- 5
+cbp <- adj + 1
 p1 <- "motifs_full.txt"
 
 kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE) {
 	testlist <- list()
 	modlist <- list()
+	ratelist <- list()
 	j <- i+1
 	nbptmp <- i*2+1
 	bindir <- paste0(analysisdir, "/motif_counts/", nbptmp, "-mers/full")
-    
+
 	gpdat <- aggseq %>%
 		mutate(Type=gsub("cpg_", "", Category2),
 			SEQA=substr(Motif, cbp-i, cbp+i),
@@ -149,7 +150,7 @@ kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE) {
 			mutate(ERV_rel_rate=nERVs/nMotifs)
 	}
 
-	ratelist[[j]] <- gpdat
+	ratelist <- gpdat
 
 	# Test for heterogeneity among subtypes sharing same (K-2)-mer parent
 	if(i>0){
@@ -168,13 +169,13 @@ kmerAnalysis <- function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE) {
 
 		moddat <- parentdat %>%
 			do(glance(lm(ERV_rel_rate ~ b1+b2, data=.)))
-		modlist[[i]] <- moddat
+		modlist <- moddat
 
 		hettests <- parentdat %>%
 			summarise(pval=chisq.test(nERVs, p=p)$p.value) %>%
 			ungroup() %>%
 			mutate(fdr=p.adjust(pval, method="fdr"))
-		testlist[[i]] <- hettests
+		testlist <- hettests
 	}
 
 	write.table(gpdat[,c("Type", "Motif", "nERVs", "nMotifs", "ERV_rel_rate")],
@@ -188,41 +189,51 @@ testlist <- list()
 modlist <- list()
 
 for(i in 1:4){
-	res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, i, ratelist, testlist, modlist, plotOutput = FALSE)
+  print(i)
+  #  function(aggseq, analysisdir, p1, cbp, i, plotOutput = TRUE)
+	res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, i, plotOutput = FALSE)
 	modlist[[i]] <- res[[1]]
-	ratelist[[i+1]] <- res[[2]] 
+	ratelist[[i+1]] <- res[[2]]
 	testlist[[i]] <- res[[3]]
 	rm(res)
 }
 
-res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, 0, ratelist, testlist, modlist, plotOutput = FALSE)
-ratelist[[1]] <- res[[2]] 
+res <- kmerAnalysis(full_data$aggseq, analysisdir, p1, cbp, 0, plotOutput = FALSE)
+ratelist[[1]] <- res[[2]]
 rm(res)
 
 # Prep data for logistic regression models
 
 logmodData <- function(sites, chr, outFile, cbp, i){
-	dat <- full_data$sites %>%
+  orderedcats <- orderedcats <- c("AT_CG", "AT_GC", "AT_TA", "GC_AT", "GC_CG", "GC_TA", "cpg_GC_AT", "cpg_GC_CG", "cpg_GC_TA")
+	dat <- sites %>%
 			filter(CHR==chr) %>%
-			mutate(Type=gsub("cpg_", "", Category2),
+			mutate(Type = Category2, #Type=gsub("cpg_", "", Category2),
 				SEQA=substr(Motif, cbp-i, cbp+i),
 				SEQB=substr(Motif, cbp*3-i, cbp*3+i),
 				Sequence=paste0(SEQA, "(", SEQB, ")")) %>%
 			dplyr::select(CHR, POS, Sequence, Type) %>%
 			mutate(mut=1) %>%
 			spread(Type, mut, fill=0)
-	write_tsv(dat, outFile, col_names = FALSE, quote_escape = FALSE)
+	dat <- dat[, c("CHR", "POS", "Sequence", orderedcats)]
+	write_tsv(dat, outFile, col_names = FALSE, escape = "none")
 }
 
 if(build_logit){
 	cat("Preparing data for logistic regression model...\n")
 
-	i<-3
-	for(chr in 1:22){
-		cat(paste0("Chromosome ", chr, "...\n"))
-		posfile <- paste0(analysisdir, "/output/logmod_data/chr", chr, "_sites.txt")
-		logmodData(full_data$sites, chr, posfile, cbp, i)
-	}
+  i<-3
+  for(chr in 1:22){
+    cat(paste0("Chromosome ", chr, "...\n"))
+    posfile <- paste0(analysisdir, "/output/logmod_data/chr", chr, "_sites.txt")
+    logmodData(full_data$sites, chr, posfile, cbp, i)
+  }
+  i<-4
+  for(chr in 1:22){
+    cat(paste0("Chromosome ", chr, "...\n"))
+    posfile <- paste0(analysisdir, "/output/logmod_data/9mer/chr", chr, "_sites.txt")
+    logmodData(full_data$sites, chr, posfile, cbp, i)
+  }
 }
 
 # Code for evaluating the rates
