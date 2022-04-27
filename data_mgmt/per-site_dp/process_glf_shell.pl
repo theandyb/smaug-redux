@@ -30,7 +30,7 @@ my $filelistcmd = "find $glfdir/chr* -mindepth 1 -type f -name \"*.glf\" | grep 
 my @chrs=(1..22);
 foreach my $i (@chrs){
   print "Processing chr$i...\n";
-  my $pgmcmd="perl $analysisdir/smaug-genetics/data_mgmt/per-site_dp/process_glf_master.pl $i";
+  my $pgmcmd="perl $analysisdir/data_mgmt/per-site_dp/process_glf_master.pl $i";
   forkExecWait($pgmcmd);
   print "==========================\n";
 }
